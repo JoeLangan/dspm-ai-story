@@ -1,0 +1,74 @@
+:root{
+  --navy:#110F51;
+  --pink:#FF0085;
+  --teal:#00D5CB;
+  --gray-blue:#879FAC;
+  --bg:#FFFFFF;
+  --bg-soft:#F7F8FA;
+  --border:#E3E7EC;
+  --risk-high:#D64545;
+  --risk-medium:#E8A33D;
+  --risk-low:#2E9E5B;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color:var(--navy);
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+}
+
+h1,h2,h3{margin:0;}
+
+header.site-header{
+  position:sticky;
+  top:0;
+  z-index:50;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 40px;
+  background:rgba(255,255,255,0.92);
+  backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--border);
+}
+header.site-header .brand{display:flex;align-items:center;gap:12px;text-decoration:none;}
+header.site-header img.logo{height:26px;display:block;}
+header.site-header .brand-sub{font-size:12px;color:var(--gray-blue);font-weight:600;letter-spacing:.02em;border-left:1px solid var(--border);padding-left:12px;}
+nav.top-nav{display:flex;gap:22px;}
+nav.top-nav a{color:var(--navy);text-decoration:none;font-size:13px;font-weight:600;opacity:.6;transition:opacity .2s;}
+nav.top-nav a:hover{opacity:1;}
+nav.top-nav a.current{opacity:1;border-bottom:2px solid var(--teal);padding-bottom:2px;}
+
+.section{
+  padding:80px 40px;
+  max-width:1080px;
+  margin:0 auto;
+  opacity:0;
+  transform:translateY(18px);
+  transition:opacity .7s ease, transform .7s ease;
+}
+.section.in-view{opacity:1;transform:translateY(0);}
+.section + .section{border-top:1px solid var(--border);}
+
+.eyebrow{
+  color:var(--gray-blue);
+  text-transform:uppercase;
+  letter-spacing:.09em;
+  font-size:12px;
+  font-weight:700;
+  margin:0 0 14px;
+}
+
+.supporting-line{color:var(--gray-blue);font-size:15px;font-style:italic;margin:0;}
+.stat-footnote{font-size:11px;color:var(--gray-blue);margin:6px 0 0;opacity:.85;}
+.disclaimer{font-size:11.5px;color:var(--gray-blue);border-top:1px dashed var(--border);padding-top:14px;margin-top:4px;}
+
+footer{background:var(--navy);color:#EDEEF7;text-align:center;padding:26px 40px;font-size:12px;opacity:.9;}
+
+@media (max-width:560px){
+  nav.top-nav{display:none;}
+}

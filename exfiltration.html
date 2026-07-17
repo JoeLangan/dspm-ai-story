@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exfiltration Channels | Xalient</title>
+<meta name="description" content="Interactive briefing on data exfiltration channels and security capability coverage.">
+<link rel="stylesheet" href="shared.css">
+<style>
+  .page-title{font-size:44px;font-weight:800;color:var(--navy);margin:0 0 14px;line-height:1.15;}
+  .page-sub{color:var(--gray-blue);font-size:15px;margin:0 0 36px;max-width:640px;}
+
+  .toggle-group{display:flex;gap:12px;margin-bottom:22px;flex-wrap:wrap;}
+  .cap-toggle{
+    padding:10px 22px;
+    border-radius:24px;
+    border:1.5px solid var(--border);
+    background:#fff;
+    color:var(--navy);
+    font-size:13.5px;
+    font-weight:700;
+    cursor:pointer;
+    transition:background .2s ease, border-color .2s ease, color .2s ease;
+    font-family:inherit;
+  }
+  .cap-toggle:hover{border-color:var(--teal);}
+  .cap-toggle.active{background:var(--teal);border-color:var(--teal);color:#fff;}
+
+  .channel-counter{font-size:14px;font-weight:700;color:var(--navy);margin:0 0 8px;}
+
+  .hub-wrap{width:100%;display:flex;justify-content:center;margin:20px 0 8px;}
+  .hub-wrap svg{width:100%;max-width:640px;height:auto;}
+  .hub-node-label{font-size:11px;fill:var(--navy);font-weight:600;}
+  .hub-center-label{font-size:13px;fill:#fff;font-weight:700;}
+
+  .capability-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:40px 0 8px;}
+  .cap-card{border:1px solid var(--border);border-radius:12px;padding:22px;background:var(--bg-soft);}
+  .cap-card-label{font-size:16px;font-weight:800;color:var(--navy);margin-bottom:8px;}
+  .cap-card-desc{font-size:13.5px;color:var(--navy);opacity:.85;line-height:1.55;margin-bottom:14px;}
+  .cap-card-reduces{font-size:12.5px;color:var(--navy);line-height:1.6;margin-bottom:14px;}
+  .cap-card-reduces-label{color:var(--teal);display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:4px;}
+  .cap-card-evidence{font-size:11.5px;color:var(--gray-blue);border-top:1px solid var(--border);padding-top:10px;line-height:1.5;}
+
+  .cap-empty-prompt{grid-column:1/-1;color:var(--gray-blue);font-size:14px;font-style:italic;padding:36px;text-align:center;border:1px dashed var(--border);border-radius:12px;}
+
+  @media (max-width:700px){
+    .capability-cards{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" class="brand">
+    <img src="Xalient%20Logo.png" alt="Xalient" class="logo">
+    <span class="brand-sub">Xalient Interactive Toolkit</span>
+  </a>
+  <nav class="top-nav">
+    <a href="index.html">Home</a>
+    <a href="dspm.html">DSPM &amp; AI Data Risk</a>
+    <a href="exfiltration.html" class="current">Exfiltration Channels</a>
+  </nav>
+</header>
+
+<section class="section" id="channels">
+  <p class="eyebrow">Exfiltration Channels</p>
+  <h1 class="page-title">Where your data actually leaves</h1>
+  <p class="page-sub">Six channels account for the overwhelming majority of enterprise data exfiltration. Select one or more capabilities below to see where each closes the gap.</p>
+
+  <div class="toggle-group" id="capability-toggles">
+    <button class="cap-toggle" data-cap="DSPM" type="button">DSPM</button>
+    <button class="cap-toggle" data-cap="SSE" type="button">SSE</button>
+    <button class="cap-toggle" data-cap="Identity" type="button">Identity</button>
+    <button class="cap-toggle" data-cap="EDR" type="button">EDR</button>
+  </div>
+
+  <p class="channel-counter" id="channel-counter">0 / 6 exfiltration channels addressed</p>
+
+  <div class="hub-wrap">
+    <svg id="hub-svg" viewBox="0 0 640 380" aria-label="Exfiltration channels diagram"></svg>
+  </div>
+
+  <div class="capability-cards" id="capability-cards">
+    <p class="cap-empty-prompt" id="cap-empty-prompt">Select a capability above to see how it reduces exfiltration risk.</p>
+  </div>
+
+  <p class="stat-footnote">For reference: IBM's 2025 Cost of a Data Breach Report puts average breach costs in the $4.4M&ndash;$4.9M range depending on how the breach began — figures shown per capability above are independently measured, not additive.</p>
+</section>
+
+<footer>
+  Xalient · Interactive briefing toolkit — for use in customer conversations only
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  var COLORS = { navy:'#110F51', pink:'#FF0085', teal:'#00D5CB', grayBlue:'#879FAC' };
+
+  var ICONS = {
+    key: '<circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6"/><path d="M15.5 7.5l3 3L22 7l-3-3"/>',
+    mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/>',
+    cloud: '<path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/>',
+    cpu: '<rect x="6" y="6" width="12" height="12" rx="1"/><rect x="10" y="10" width="4" height="4"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/>',
+    briefcase: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>',
+    monitor: '<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>'
+  };
+
+  var CHANNELS = [
+    { id:'credentials', label:'Credentials & identity', icon:'key' },
+    { id:'phishing', label:'Phishing & email', icon:'mail' },
+    { id:'cloud-saas', label:'Cloud & SaaS', icon:'cloud' },
+    { id:'ai-tools', label:'AI tools & agents', icon:'cpu', accent:'pink' },
+    { id:'third-party', label:'Third-party & vendor', icon:'briefcase' },
+    { id:'endpoint', label:'Endpoint & devices', icon:'monitor' }
+  ];
+
+  // Coverage mapping: null = no coverage, 'partial', or 'primary'
+  var COVERAGE = {
+    'credentials':  { DSPM:'partial', SSE:'partial', Identity:'primary', EDR:'partial' },
+    'phishing':     { DSPM:null,      SSE:'primary', Identity:null,      EDR:'partial' },
+    'cloud-saas':   { DSPM:'primary', SSE:'primary', Identity:null,      EDR:null },
+    'ai-tools':     { DSPM:'primary', SSE:'partial', Identity:null,      EDR:null },
+    'third-party':  { DSPM:'partial', SSE:null,      Identity:'primary', EDR:null },
+    'endpoint':     { DSPM:null,      SSE:null,      Identity:null,      EDR:'primary' }
+  };
+
+  var CAPABILITIES = [
+    {
+      id:'DSPM',
+      label:'DSPM',
+      description:'Discovers and classifies sensitive data across cloud, SaaS, and AI pipelines.',
+      reduces:'Once data is classified, every other control can act on what’s actually sensitive instead of guessing. That’s what turns "this might be private" into a rule DLP and access policies can actually enforce.',
+      evidence:'IBM lists data discovery, classification, and encryption among its top recommended cost reducers for 2025.'
+    },
+    {
+      id:'SSE',
+      label:'SSE',
+      description:'Enforces zero trust access and inline data-loss prevention across web, cloud, and private app traffic.',
+      reduces:'Even if a phishing email succeeds and an account is compromised, SSE inspects the traffic itself in real time — so the sensitive file still can’t leave through an unsanctioned upload, personal cloud app, or webmail.',
+      evidence:'Organizations with zero trust architecture in place report $1.76M lower average breach cost (IBM 2025).'
+    },
+    {
+      id:'Identity',
+      label:'Identity',
+      description:'Governs who and what can access sensitive systems, enforcing least-privilege and just-in-time access.',
+      reduces:'A stolen password or a compromised vendor login only matters if it opens a door. Removing standing access means that door stays shut except for the exact moment and scope it was actually needed.',
+      evidence:'IBM’s top recommended lever for 2025 is fortifying identity and access management; credential-based breaches average $4.67M.'
+    },
+    {
+      id:'EDR',
+      label:'EDR',
+      description:'Detects and responds to malicious activity directly on endpoints and devices.',
+      reduces:'Exfiltration rarely happens at the moment of compromise — it happens hours or days later, while an attacker moves laterally or stages data to leave. EDR is what catches that window and isolates the device first.',
+      evidence:'Organizations using AI-driven security automation extensively report $1.9M lower average breach cost (IBM 2025).'
+    }
+  ];
+
+  var activeCaps = {};
+
+  // ---------- Hub diagram ----------
+  var ns = 'http://www.w3.org/2000/svg';
+  var hubSvg = document.getElementById('hub-svg');
+  var cx = 320, cy = 190, r = 140;
+  var angles = [-90,-30,30,90,150,210].map(function(d){ return d * Math.PI / 180; });
+  var nodePositions = CHANNELS.map(function(channel, i){
+    var a = angles[i];
+    return { channel:channel, x: cx + r*Math.cos(a), y: cy + r*Math.sin(a) };
+  });
+  var badgeEls = {};
+
+  function buildHub(){
+    // connecting lines
+    nodePositions.forEach(function(p){
+      var line = document.createElementNS(ns,'line');
+      line.setAttribute('x1', cx);
+      line.setAttribute('y1', cy);
+      line.setAttribute('x2', p.x);
+      line.setAttribute('y2', p.y);
+      line.setAttribute('stroke', COLORS.grayBlue);
+      line.setAttribute('stroke-width', '1.5');
+      line.setAttribute('opacity', '0.45');
+      hubSvg.appendChild(line);
+    });
+
+    // outer nodes
+    nodePositions.forEach(function(p){
+      var g = document.createElementNS(ns,'g');
+
+      var circle = document.createElementNS(ns,'circle');
+      circle.setAttribute('cx', p.x);
+      circle.setAttribute('cy', p.y);
+      circle.setAttribute('r', 30);
+      circle.setAttribute('fill', '#fff');
+      circle.setAttribute('stroke', p.channel.accent === 'pink' ? COLORS.pink : COLORS.grayBlue);
+      circle.setAttribute('stroke-width', p.channel.accent === 'pink' ? '2.5' : '1.2');
+      g.appendChild(circle);
+
+      var iconScale = 20 / 24;
+      var iconWrap = document.createElementNS(ns,'g');
+      iconWrap.setAttribute('transform', 'translate(' + (p.x - 12*iconScale) + ',' + (p.y - 12*iconScale) + ') scale(' + iconScale + ')');
+      iconWrap.setAttribute('fill', 'none');
+      iconWrap.setAttribute('stroke-width', '1.6');
+      iconWrap.setAttribute('stroke-linecap', 'round');
+      iconWrap.setAttribute('stroke-linejoin', 'round');
+      iconWrap.setAttribute('stroke', p.channel.accent === 'pink' ? COLORS.pink : COLORS.navy);
+      iconWrap.innerHTML = ICONS[p.channel.icon];
+      g.appendChild(iconWrap);
+
+      var label = document.createElementNS(ns,'text');
+      label.setAttribute('x', p.x);
+      label.setAttribute('y', p.y + 48);
+      label.setAttribute('text-anchor','middle');
+      label.setAttribute('class','hub-node-label');
+      label.textContent = p.channel.label;
+      g.appendChild(label);
+
+      // coverage badge (hidden until active)
+      var badge = document.createElementNS(ns,'circle');
+      badge.setAttribute('cx', p.x + 22);
+      badge.setAttribute('cy', p.y - 22);
+      badge.setAttribute('r', 8);
+      badge.setAttribute('fill', 'none');
+      badge.setAttribute('stroke', COLORS.teal);
+      badge.setAttribute('stroke-width', '2.5');
+      badge.setAttribute('opacity', '0');
+      g.appendChild(badge);
+      badgeEls[p.channel.id] = badge;
+
+      hubSvg.appendChild(g);
+    });
+
+    // center node
+    var centerCircle = document.createElementNS(ns,'circle');
+    centerCircle.setAttribute('cx', cx);
+    centerCircle.setAttribute('cy', cy);
+    centerCircle.setAttribute('r', 44);
+    centerCircle.setAttribute('fill', COLORS.navy);
+    hubSvg.appendChild(centerCircle);
+
+    var centerText = document.createElementNS(ns,'text');
+    centerText.setAttribute('x', cx);
+    centerText.setAttribute('y', cy - 4);
+    centerText.setAttribute('text-anchor','middle');
+    centerText.setAttribute('class','hub-center-label');
+    centerText.textContent = 'Your';
+    hubSvg.appendChild(centerText);
+
+    var centerText2 = document.createElementNS(ns,'text');
+    centerText2.setAttribute('x', cx);
+    centerText2.setAttribute('y', cy + 13);
+    centerText2.setAttribute('text-anchor','middle');
+    centerText2.setAttribute('class','hub-center-label');
+    centerText2.textContent = 'data';
+    hubSvg.appendChild(centerText2);
+  }
+
+  function channelCoverageLevel(channelId){
+    var best = null;
+    Object.keys(activeCaps).forEach(function(capId){
+      var level = COVERAGE[channelId][capId];
+      if (level === 'primary') best = 'primary';
+      else if (level === 'partial' && best !== 'primary') best = 'partial';
+    });
+    return best;
+  }
+
+  function refreshCoverage(){
+    var addressedCount = 0;
+    CHANNELS.forEach(function(channel){
+      var level = channelCoverageLevel(channel.id);
+      var badge = badgeEls[channel.id];
+      if (level === 'primary'){
+        badge.setAttribute('fill', COLORS.teal);
+        badge.setAttribute('opacity', '1');
+        addressedCount++;
+      } else if (level === 'partial'){
+        badge.setAttribute('fill', '#fff');
+        badge.setAttribute('opacity', '1');
+        addressedCount++;
+      } else {
+        badge.setAttribute('opacity', '0');
+      }
+    });
+    document.getElementById('channel-counter').textContent = addressedCount + ' / 6 exfiltration channels addressed';
+  }
+
+  // ---------- Capability toggles ----------
+  var toggleButtons = document.querySelectorAll('.cap-toggle');
+  var cardsContainer = document.getElementById('capability-cards');
+
+  function renderCards(){
+    var activeIds = CAPABILITIES.filter(function(c){ return activeCaps[c.id]; });
+
+    if (activeIds.length === 0){
+      cardsContainer.innerHTML = '<p class="cap-empty-prompt" id="cap-empty-prompt">Select a capability above to see how it reduces exfiltration risk.</p>';
+      return;
+    }
+
+    cardsContainer.innerHTML = activeIds.map(function(cap){
+      return '<div class="cap-card">' +
+        '<div class="cap-card-label">' + cap.label + '</div>' +
+        '<div class="cap-card-desc">' + cap.description + '</div>' +
+        '<div class="cap-card-reduces"><span class="cap-card-reduces-label">How this reduces risk</span>' + cap.reduces + '</div>' +
+        '<div class="cap-card-evidence">' + cap.evidence + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  toggleButtons.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var capId = btn.dataset.cap;
+      if (activeCaps[capId]){
+        delete activeCaps[capId];
+        btn.classList.remove('active');
+      } else {
+        activeCaps[capId] = true;
+        btn.classList.add('active');
+      }
+      refreshCoverage();
+      renderCards();
+    });
+  });
+
+  buildHub();
+  refreshCoverage();
+  renderCards();
+
+  // ---------- Reveal on scroll ----------
+  var sections = document.querySelectorAll('.section');
+  if ('IntersectionObserver' in window){
+    var observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting){
+          entry.target.classList.add('in-view');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    sections.forEach(function(s){ observer.observe(s); });
+  } else {
+    sections.forEach(function(s){ s.classList.add('in-view'); });
+  }
+
+})();
+</script>
+
+</body>
+</html>

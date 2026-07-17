@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cyera DSPM — Interactive Briefing | Xalient</title>
+<meta name="description" content="Interactive briefing on data security posture management and AI agent risk.">
+<link rel="stylesheet" href="shared.css">
+<style>
+  .stat-headline{font-size:60px;font-weight:800;line-height:1.08;color:var(--navy);margin-bottom:10px;}
+  .stat-headline .stat-detail{display:block;font-size:20px;font-weight:500;color:var(--navy);opacity:.72;margin-top:10px;}
+  .stat-sub{color:var(--gray-blue);font-size:15px;margin:0 0 40px;}
+
+  .card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;}
+  .repo-card{
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:18px;
+    background:#F1F2F4;
+    transition:background .45s ease, border-color .45s ease;
+  }
+  .repo-card-top{display:flex;align-items:flex-start;justify-content:space-between;}
+  .repo-icon svg{width:22px;height:22px;color:var(--gray-blue);transition:color .45s ease;}
+  .repo-label{font-weight:700;font-size:14.5px;color:var(--navy);margin-top:12px;}
+  .repo-status{font-size:12.5px;color:var(--gray-blue);margin-top:4px;line-height:1.4;transition:color .45s ease;}
+
+  .risk-badge{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;visibility:hidden;white-space:nowrap;}
+  .repo-card.risk-high{background:rgba(214,69,69,.07);border-color:rgba(214,69,69,.32);}
+  .repo-card.risk-high .repo-icon svg{color:var(--risk-high);}
+  .repo-card.risk-high .repo-status{color:#B23A3A;}
+  .repo-card.risk-high .risk-badge{visibility:visible;background:var(--risk-high);color:#fff;}
+
+  .repo-card.risk-medium{background:rgba(232,163,61,.09);border-color:rgba(232,163,61,.4);}
+  .repo-card.risk-medium .repo-icon svg{color:#B9821F;}
+  .repo-card.risk-medium .repo-status{color:#9C6B18;}
+  .repo-card.risk-medium .risk-badge{visibility:visible;background:var(--risk-medium);color:#3A2A05;}
+
+  .repo-card.risk-low{background:rgba(46,158,91,.08);border-color:rgba(46,158,91,.35);}
+  .repo-card.risk-low .repo-icon svg{color:var(--risk-low);}
+  .repo-card.risk-low .repo-status{color:var(--risk-low);}
+  .repo-card.risk-low .risk-badge{visibility:visible;background:var(--risk-low);color:#fff;}
+
+  /* Section 2 */
+  .slider-row{display:flex;align-items:center;gap:16px;margin:8px 0 4px;max-width:520px;}
+  .slider-row span{font-size:13px;font-weight:700;color:var(--gray-blue);}
+  input[type=range]{flex:1;accent-color:var(--pink);height:4px;}
+
+  .fan-wrap{width:100%;display:flex;justify-content:center;margin:28px 0 8px;}
+  .fan-wrap svg{width:100%;max-width:640px;height:auto;}
+  .fan-node-label{font-size:11px;fill:var(--navy);font-weight:600;}
+  .fan-node-sub{font-size:9.5px;fill:var(--gray-blue);}
+  .fan-center-label{font-size:12px;fill:#fff;font-weight:700;}
+
+  .stat-callout{
+    background:var(--bg-soft);
+    border-left:4px solid var(--pink);
+    padding:16px 20px;
+    border-radius:8px;
+    margin:28px 0;
+    font-size:14.5px;
+    color:var(--navy);
+    line-height:1.5;
+  }
+  .stat-callout strong{font-size:22px;display:inline-block;margin-right:4px;}
+  .stat-callout.pink-alt{border-left-color:var(--pink);}
+
+  /* Section 3 */
+  .fan-caption{text-align:center;font-size:12.5px;color:var(--gray-blue);margin:0 0 8px;min-height:16px;}
+  .toggle-row{display:flex;align-items:center;gap:14px;margin-bottom:12px;}
+  .toggle-label{font-size:14px;color:var(--gray-blue);font-weight:700;transition:color .3s;}
+  .toggle-label.active{color:var(--navy);}
+  .toggle-switch{width:50px;height:27px;border-radius:20px;background:#D9DEE3;border:none;position:relative;cursor:pointer;transition:background .3s;padding:0;flex:none;}
+  .toggle-switch .toggle-knob{position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .3s;}
+  .toggle-switch.on{background:var(--teal);}
+  .toggle-switch.on .toggle-knob{transform:translateX(23px);}
+
+  .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:8px 0 32px;}
+  .stat-tile{background:var(--bg-soft);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center;}
+  .stat-value{font-size:26px;font-weight:800;color:var(--navy);}
+  .stat-caption{font-size:12.5px;color:var(--gray-blue);margin-top:4px;}
+
+  .dcg-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:52px;padding-top:36px;border-top:1px solid var(--border);}
+  .dcg-step h3{color:var(--teal);font-size:14px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;}
+  .dcg-step p{color:var(--navy);font-size:13.5px;line-height:1.55;opacity:.85;margin:0;}
+
+  .proof-points{margin-top:28px;font-size:12.5px;color:var(--gray-blue);line-height:1.7;}
+  .proof-points strong{color:var(--navy);}
+
+  /* Section 4 */
+  .form-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0;}
+  .form-row label{display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:var(--gray-blue);font-weight:700;}
+  .form-row input,.form-row select{
+    padding:10px 12px;border:1px solid var(--border);border-radius:8px;
+    font-size:14px;color:var(--navy);background:#fff;font-family:inherit;
+  }
+  .form-row input:focus,.form-row select:focus{outline:2px solid var(--teal);outline-offset:1px;}
+
+  .estimate-output{background:var(--bg-soft);border:1px solid var(--border);border-radius:12px;padding:32px;text-align:center;margin:8px 0 16px;}
+  .estimate-value{font-size:38px;font-weight:800;color:var(--navy);}
+  .estimate-caption{color:var(--gray-blue);font-size:13.5px;margin-top:6px;}
+  .estimate-detail{color:var(--gray-blue);font-size:12.5px;margin-top:14px;}
+  .estimate-shadow-callout{color:var(--pink);font-size:12.5px;font-weight:700;margin-top:10px;}
+
+  @media (max-width:900px){
+    .card-grid,.form-row,.stats-row{grid-template-columns:repeat(2,1fr);}
+    .dcg-strip{grid-template-columns:1fr;gap:24px;}
+    .stat-headline{font-size:44px;}
+  }
+  @media (max-width:560px){
+    .card-grid,.form-row,.stats-row{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" class="brand">
+    <img src="Xalient%20Logo.png" alt="Xalient" class="logo">
+    <span class="brand-sub">Xalient Interactive Toolkit</span>
+  </a>
+  <nav class="top-nav">
+    <a href="index.html">Home</a>
+    <a href="dspm.html" class="current">DSPM &amp; AI Data Risk</a>
+    <a href="exfiltration.html">Exfiltration Channels</a>
+  </nav>
+</header>
+
+<!-- Section 1: The gap -->
+<section id="gap" class="section">
+  <p class="eyebrow">The gap</p>
+  <h1 class="stat-headline">~55% of enterprise data is "dark"<span class="stat-detail">Stored but never classified, analyzed, or governed by policy.</span></h1>
+  <p class="stat-footnote">Source: Splunk, <em>State of Dark Data Report</em>, 2025.</p>
+  <div class="card-grid" id="grid-1" style="margin-top:28px;"></div>
+  <p class="supporting-line">You can't protect, govern, or apply policy to data you don't know exists.</p>
+</section>
+
+<!-- Section 2: The multiplier -->
+<section id="multiplier" class="section">
+  <p class="eyebrow">The multiplier</p>
+  <h2 style="font-size:28px;margin-bottom:18px;">AI / agent adoption</h2>
+  <div class="slider-row">
+    <span>Low</span>
+    <input type="range" id="adoption-slider" min="0" max="100" value="50">
+    <span>High</span>
+  </div>
+  <div class="fan-wrap">
+    <svg id="fan-svg-2" viewBox="0 0 640 380" aria-label="AI agent access diagram"></svg>
+  </div>
+  <div class="stat-callout">
+    <strong>68%</strong>of organizations currently can't distinguish between human and AI agent activity inside their own systems.
+  </div>
+  <p class="stat-footnote">Source: Cloud Security Alliance &amp; Aembit, <em>Identity and Access Gaps in the Age of Autonomous AI</em>, 2026.</p>
+  <div class="stat-callout pink-alt">
+    <strong>+$670K</strong>Breaches involving unsanctioned "shadow AI" tools cost organizations $670K more on average than standard incidents.
+  </div>
+  <p class="stat-footnote">Source: IBM, <em>Cost of a Data Breach Report</em>, 2025.</p>
+  <p class="supporting-line">This exposure isn't new. AI just made it discoverable in seconds instead of never.</p>
+</section>
+
+<!-- Section 3: The fix -->
+<section id="fix" class="section">
+  <p class="eyebrow">The fix</p>
+  <div class="toggle-row">
+    <span class="toggle-label active" id="label-no-dspm">No DSPM</span>
+    <button class="toggle-switch" id="cyera-toggle" role="switch" aria-checked="false" aria-label="Toggle Cyera DSPM">
+      <span class="toggle-knob"></span>
+    </button>
+    <span class="toggle-label" id="label-with-cyera">With Cyera</span>
+  </div>
+
+  <p class="fan-caption" id="fan3-caption"></p>
+  <div class="fan-wrap">
+    <svg id="fan-svg-3" viewBox="0 0 640 380" aria-label="Access exposure diagram"></svg>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-tile"><div class="stat-value" id="stat-classified">0%</div><div class="stat-caption">Data classified</div></div>
+    <div class="stat-tile"><div class="stat-value" id="stat-flagged">—</div><div class="stat-caption">Sensitive records flagged</div></div>
+    <div class="stat-tile"><div class="stat-value" id="stat-paths">—</div><div class="stat-caption">AI/agent access paths flagged</div></div>
+  </div>
+
+  <div class="card-grid" id="grid-3"></div>
+
+  <div class="dcg-strip">
+    <div class="dcg-step">
+      <h3>Discover</h3>
+      <p>Agentless scanning across cloud, SaaS, and on-prem data stores.</p>
+    </div>
+    <div class="dcg-step">
+      <h3>Classify</h3>
+      <p>Context-aware classification, not just keyword or pattern matching.</p>
+    </div>
+    <div class="dcg-step">
+      <h3>Govern</h3>
+      <p>Real-time policy enforcement at the point of access — browser, AI agent, or data pipeline.</p>
+    </div>
+  </div>
+
+  <p class="proof-points">
+    <strong>Browser Shield for AI</strong> flags sensitive data before it's pasted into a public AI tool.
+    <strong>Data Lineage</strong> tracks who or what touched a file, and when.
+    Expanded visibility into AI agent activity in platforms like <strong>Snowflake Cortex</strong>.
+  </p>
+</section>
+
+<!-- Section 4: Make it yours -->
+<section id="tailor" class="section">
+  <p class="eyebrow">Make it yours</p>
+  <h2 style="font-size:28px;margin-bottom:6px;">Estimate your exposure</h2>
+  <p class="stat-sub" style="margin-top:6px;">A rough, illustrative estimate based on company size and industry.</p>
+
+  <div class="form-row">
+    <label>Employees
+      <input type="number" id="input-employees" min="0" placeholder="e.g. 5000">
+    </label>
+    <label>SaaS applications in use
+      <input type="number" id="input-saas" min="0" placeholder="e.g. 120">
+    </label>
+    <label>Industry
+      <select id="input-industry">
+        <option>Financial Services</option>
+        <option>Healthcare</option>
+        <option>Manufacturing</option>
+        <option selected>Technology</option>
+        <option>Retail</option>
+        <option>Other</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="estimate-output">
+    <div class="estimate-value" id="estimate-value">—</div>
+    <div class="estimate-caption">Estimated dollar exposure tied to dark, ungoverned data</div>
+    <div class="estimate-detail" id="estimate-detail"></div>
+    <div class="estimate-shadow-callout" id="estimate-shadow-ai"></div>
+  </div>
+
+  <p class="stat-footnote">Modeled using IBM's <em>Cost of a Data Breach Report</em> 2025 (global average $4.44M; shadow AI premium +$670K; per-record cost $160&ndash;$178) and Splunk's <em>State of Dark Data Report</em> 2025 (55% dark data baseline).</p>
+  <p class="disclaimer">These are industry-average estimates for illustration only, not a calculation based on your actual environment.</p>
+</section>
+
+<footer>
+  Xalient · Cyera DSPM interactive briefing — for use in customer conversations only
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  var COLORS = { navy:'#110F51', pink:'#FF0085', teal:'#00D5CB', grayBlue:'#879FAC' };
+
+  var ICONS = {
+    cloud: '<path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/>',
+    grid: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>',
+    database: '<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5"/><path d="M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3"/>',
+    mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/>',
+    cpu: '<rect x="6" y="6" width="12" height="12" rx="1"/><rect x="10" y="10" width="4" height="4"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/>',
+    monitor: '<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>'
+  };
+
+  function svgIcon(name){
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' + ICONS[name] + '</svg>';
+  }
+
+  var REPOS = [
+    { id:'cloud-storage', label:'Cloud storage', icon:'cloud', risk:'high', status:'38% overshared, remediation flagged' },
+    { id:'saas-apps', label:'SaaS apps', icon:'grid', risk:'medium', status:'12% overshared' },
+    { id:'data-warehouse', label:'Data warehouse', icon:'database', risk:'medium', status:'Access review needed' },
+    { id:'email-collab', label:'Email and collaboration', icon:'mail', risk:'high', status:'Stale sharing links found' },
+    { id:'ai-copilot', label:'AI and copilot tools', icon:'cpu', risk:'high', status:'Prompt exposure risk flagged' },
+    { id:'endpoints', label:'Endpoints', icon:'monitor', risk:'low', status:'Governed' }
+  ];
+
+  var RISK_LABEL = { high:'High risk', medium:'Medium risk', low:'Governed' };
+
+  // ---------- Cards ----------
+  function buildCard(repo){
+    var card = document.createElement('div');
+    card.className = 'repo-card state-unclassified';
+    card.dataset.repo = repo.id;
+    card.innerHTML =
+      '<div class="repo-card-top">' +
+        '<span class="repo-icon">' + svgIcon(repo.icon) + '</span>' +
+        '<span class="risk-badge" data-badge></span>' +
+      '</div>' +
+      '<div class="repo-label">' + repo.label + '</div>' +
+      '<div class="repo-status" data-status>Unclassified</div>';
+    return card;
+  }
+
+  function renderGrid(containerId){
+    var grid = document.getElementById(containerId);
+    var cards = {};
+    REPOS.forEach(function(repo){
+      var card = buildCard(repo);
+      grid.appendChild(card);
+      cards[repo.id] = card;
+    });
+    return cards;
+  }
+
+  var grid1Cards = renderGrid('grid-1');
+  var grid3Cards = renderGrid('grid-3');
+
+  function setCardState(card, repo, isCyera){
+    var statusEl = card.querySelector('[data-status]');
+    var badgeEl = card.querySelector('[data-badge]');
+    card.classList.remove('risk-high','risk-medium','risk-low','state-unclassified');
+    if (!isCyera){
+      card.classList.add('state-unclassified');
+      statusEl.textContent = 'Unclassified';
+      badgeEl.textContent = '';
+    } else {
+      card.classList.add('risk-' + repo.risk);
+      statusEl.textContent = repo.status;
+      badgeEl.textContent = RISK_LABEL[repo.risk];
+    }
+  }
+
+  // ---------- Fan diagrams ----------
+  function buildFan(svgEl, centerLabel, centerColor){
+    var cx = 320, cy = 190, r = 138;
+    var angles = [-90,-30,30,90,150,210].map(function(d){ return d * Math.PI / 180; });
+    var positions = REPOS.map(function(repo, i){
+      var a = angles[i];
+      return { repo:repo, x: cx + r*Math.cos(a), y: cy + r*Math.sin(a) };
+    });
+
+    var ns = 'http://www.w3.org/2000/svg';
+    var linesGroup = document.createElementNS(ns,'g');
+    linesGroup.setAttribute('class','lines');
+    svgEl.appendChild(linesGroup);
+
+    var nodesGroup = document.createElementNS(ns,'g');
+    positions.forEach(function(p){
+      var g = document.createElementNS(ns,'g');
+      var circle = document.createElementNS(ns,'circle');
+      circle.setAttribute('cx', p.x);
+      circle.setAttribute('cy', p.y);
+      circle.setAttribute('r', 30);
+      circle.setAttribute('fill', '#fff');
+      circle.setAttribute('stroke', COLORS.grayBlue);
+      circle.setAttribute('stroke-width', '1.2');
+      g.appendChild(circle);
+
+      var label = document.createElementNS(ns,'text');
+      label.setAttribute('x', p.x);
+      label.setAttribute('y', p.y + 48);
+      label.setAttribute('text-anchor','middle');
+      label.setAttribute('class','fan-node-label');
+      label.textContent = p.repo.label;
+      g.appendChild(label);
+
+      nodesGroup.appendChild(g);
+    });
+    svgEl.appendChild(nodesGroup);
+
+    var centerGroup = document.createElementNS(ns,'g');
+    var centerCircle = document.createElementNS(ns,'circle');
+    centerCircle.setAttribute('cx', cx);
+    centerCircle.setAttribute('cy', cy);
+    centerCircle.setAttribute('r', 42);
+    centerCircle.setAttribute('fill', centerColor);
+    centerGroup.appendChild(centerCircle);
+
+    var centerText = document.createElementNS(ns,'text');
+    centerText.setAttribute('x', cx);
+    centerText.setAttribute('y', cy - 4);
+    centerText.setAttribute('text-anchor','middle');
+    centerText.setAttribute('class','fan-center-label');
+    centerText.textContent = 'AI /';
+    centerGroup.appendChild(centerText);
+
+    var centerText2 = document.createElementNS(ns,'text');
+    centerText2.setAttribute('x', cx);
+    centerText2.setAttribute('y', cy + 13);
+    centerText2.setAttribute('text-anchor','middle');
+    centerText2.setAttribute('class','fan-center-label');
+    centerText2.textContent = 'Copilot';
+    centerGroup.appendChild(centerText2);
+
+    svgEl.appendChild(centerGroup);
+
+    return { cx:cx, cy:cy, positions:positions, linesGroup:linesGroup };
+  }
+
+  function updateFan(fan, density, color){
+    var ns = 'http://www.w3.org/2000/svg';
+    fan.linesGroup.innerHTML = '';
+    var numLines = Math.max(1, Math.round(1 + density*4));
+    var baseWidth = 1 + density*4.5;
+    var opacity = 0.2 + density*0.6;
+
+    fan.positions.forEach(function(p){
+      var dx = p.x - fan.cx, dy = p.y - fan.cy;
+      var len = Math.sqrt(dx*dx + dy*dy);
+      var nx = -dy/len, ny = dx/len;
+
+      for (var i=0; i<numLines; i++){
+        var spreadIndex = numLines > 1 ? (i - (numLines-1)/2) : 0;
+        var offsetStart = spreadIndex * 4;
+        var offsetEnd = spreadIndex * 11;
+        var x1 = fan.cx + nx*offsetStart, y1 = fan.cy + ny*offsetStart;
+        var x2 = p.x + nx*offsetEnd, y2 = p.y + ny*offsetEnd;
+
+        var line = document.createElementNS(ns,'line');
+        line.setAttribute('x1', x1);
+        line.setAttribute('y1', y1);
+        line.setAttribute('x2', x2);
+        line.setAttribute('y2', y2);
+        line.setAttribute('stroke', color);
+        line.setAttribute('stroke-width', Math.max(0.8, baseWidth * (1 - i*0.1)));
+        line.setAttribute('stroke-linecap', 'round');
+        line.setAttribute('opacity', opacity);
+        fan.linesGroup.appendChild(line);
+      }
+    });
+  }
+
+  // Section 2 fan
+  var fan2 = buildFan(document.getElementById('fan-svg-2'), 'AI / Copilot', COLORS.pink);
+  var slider = document.getElementById('adoption-slider');
+  var adoptionDensity = slider.value / 100;
+
+  function refreshFan2(){
+    adoptionDensity = slider.value / 100;
+    updateFan(fan2, adoptionDensity, COLORS.pink);
+    if (!cyeraOn) refreshFan3Off();
+  }
+
+  // Section 3 fan
+  var fan3 = buildFan(document.getElementById('fan-svg-3'), 'AI / Copilot', COLORS.pink);
+  var fan3Caption = document.getElementById('fan3-caption');
+
+  // ---------- Toggle: The fix ----------
+  var toggleBtn = document.getElementById('cyera-toggle');
+  var labelNo = document.getElementById('label-no-dspm');
+  var labelYes = document.getElementById('label-with-cyera');
+  var statClassified = document.getElementById('stat-classified');
+  var statFlagged = document.getElementById('stat-flagged');
+  var statPaths = document.getElementById('stat-paths');
+  var cyeraOn = false;
+
+  function refreshFan3Off(){
+    updateFan(fan3, adoptionDensity, COLORS.pink);
+    fan3Caption.textContent = 'Exposure reflects the AI/agent adoption level set above (' + Math.round(adoptionDensity*100) + '%).';
+  }
+
+  slider.addEventListener('input', refreshFan2);
+  refreshFan2();
+
+  function animateValue(el, start, end, opts){
+    opts = opts || {};
+    var duration = opts.duration || 900;
+    var suffix = opts.suffix || '';
+    var t0 = null;
+    function step(ts){
+      if (!t0) t0 = ts;
+      var p = Math.min(1, (ts - t0) / duration);
+      var eased = 1 - Math.pow(1-p, 3);
+      var val = Math.round(start + (end-start)*eased);
+      el.textContent = val.toLocaleString() + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  function applyCyeraState(on){
+    cyeraOn = on;
+    toggleBtn.classList.toggle('on', on);
+    toggleBtn.setAttribute('aria-checked', on ? 'true' : 'false');
+    labelNo.classList.toggle('active', !on);
+    labelYes.classList.toggle('active', on);
+
+    REPOS.forEach(function(repo){
+      setCardState(grid3Cards[repo.id], repo, on);
+    });
+
+    if (on){
+      updateFan(fan3, 0.1, COLORS.teal);
+      fan3Caption.textContent = 'With Cyera, access stays least-privilege regardless of AI/agent adoption level.';
+      animateValue(statClassified, 0, 94, { suffix:'%' });
+      animateValue(statFlagged, 0, 1240, {});
+      animateValue(statPaths, 0, 38, {});
+    } else {
+      refreshFan3Off();
+      statClassified.textContent = '0%';
+      statFlagged.textContent = '—';
+      statPaths.textContent = '—';
+    }
+  }
+
+  toggleBtn.addEventListener('click', function(){
+    applyCyeraState(!cyeraOn);
+  });
+
+  applyCyeraState(false);
+
+  // ---------- Section 4: Make it yours ----------
+  var inputEmployees = document.getElementById('input-employees');
+  var inputSaas = document.getElementById('input-saas');
+  var inputIndustry = document.getElementById('input-industry');
+  var estimateValueEl = document.getElementById('estimate-value');
+  var estimateDetailEl = document.getElementById('estimate-detail');
+  var estimateShadowAiEl = document.getElementById('estimate-shadow-ai');
+
+  var INDUSTRY_FACTOR = {
+    'Financial Services': 1.15,
+    'Healthcare': 1.2,
+    'Manufacturing': 0.9,
+    'Technology': 1.0,
+    'Retail': 0.95,
+    'Other': 1.0
+  };
+
+  // IBM Cost of a Data Breach Report, 2025
+  var IBM_BASELINE_BREACH_COST = 4440000;
+  var IBM_SHADOW_AI_DELTA = 670000;
+  var IBM_RECORD_COST_LOW = 160;
+  var IBM_RECORD_COST_MID = 168;
+  var IBM_RECORD_COST_HIGH = 178;
+
+  // Splunk, State of Dark Data Report, 2025
+  var DARK_DATA_SHARE = 0.55;
+
+  var REF_EMPLOYEES = 5000;
+  var REF_SAAS = 120;
+
+  function formatGB(gb){
+    if (gb >= 1000000) return (gb/1000000).toFixed(1) + ' PB';
+    if (gb >= 1000) return (gb/1000).toFixed(1) + ' TB';
+    return Math.round(gb).toLocaleString() + ' GB';
+  }
+
+  function formatUSD(n){
+    if (n >= 1000000) return '$' + (n/1000000).toFixed(1) + 'M';
+    return '$' + Math.round(n/1000) + 'K';
+  }
+
+  function computeEstimate(){
+    var employees = parseFloat(inputEmployees.value) || 0;
+    var saas = parseFloat(inputSaas.value) || 0;
+
+    if (employees <= 0 && saas <= 0){
+      estimateValueEl.textContent = '—';
+      estimateDetailEl.textContent = '';
+      estimateShadowAiEl.textContent = '';
+      return;
+    }
+
+    var factor = INDUSTRY_FACTOR[inputIndustry.value] || 1.0;
+    var totalGB = (employees * 2 + saas * 40) * factor;
+    var darkGB = totalGB * DARK_DATA_SHARE;
+
+    var employeeRatio = employees > 0 ? employees / REF_EMPLOYEES : 1;
+    var saasRatio = saas > 0 ? saas / REF_SAAS : 1;
+    var sizeFactor = employeeRatio * 0.6 + saasRatio * 0.4;
+    sizeFactor = Math.max(0.35, Math.min(4, sizeFactor));
+
+    var midExposure = IBM_BASELINE_BREACH_COST * sizeFactor * factor * DARK_DATA_SHARE;
+    var lowExposure = midExposure * (IBM_RECORD_COST_LOW / IBM_RECORD_COST_MID);
+    var highExposure = midExposure * (IBM_RECORD_COST_HIGH / IBM_RECORD_COST_MID);
+
+    estimateValueEl.textContent = '≈ ' + formatUSD(lowExposure) + ' – ' + formatUSD(highExposure);
+    estimateDetailEl.textContent = 'Modeled on an estimated ' + formatGB(darkGB) + ' of dark, ungoverned data across ' +
+      employees.toLocaleString() + ' employees and ' + saas.toLocaleString() + ' SaaS applications (' + inputIndustry.value + ').';
+    estimateShadowAiEl.textContent = '+' + formatUSD(IBM_SHADOW_AI_DELTA) + ' higher on average if unsanctioned ("shadow") AI tool use is involved.';
+  }
+
+  [inputEmployees, inputSaas].forEach(function(el){ el.addEventListener('input', computeEstimate); });
+  inputIndustry.addEventListener('change', computeEstimate);
+
+  // ---------- Reveal on scroll ----------
+  var sections = document.querySelectorAll('.section');
+  if ('IntersectionObserver' in window){
+    var observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting){
+          entry.target.classList.add('in-view');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    sections.forEach(function(s){ observer.observe(s); });
+  } else {
+    sections.forEach(function(s){ s.classList.add('in-view'); });
+  }
+
+})();
+</script>
+
+</body>
+</html>
