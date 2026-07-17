@@ -8,8 +8,18 @@
 <link rel="stylesheet" href="shared.css">
 <style>
   .page-title{font-size:44px;font-weight:800;color:var(--navy);margin:0 0 14px;line-height:1.15;}
-  .page-sub{color:var(--gray-blue);font-size:15px;margin:0 0 36px;max-width:640px;}
+  .page-sub{color:var(--gray-blue);font-size:15px;margin:0 0 32px;max-width:640px;}
 
+  /* Discovery step */
+  .discovery-box{border:1px dashed var(--border);border-radius:12px;background:var(--bg-soft);padding:20px 24px;margin-bottom:32px;}
+  .discovery-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:3px;}
+  .discovery-sub{font-size:12px;color:var(--gray-blue);margin-bottom:14px;}
+  .discovery-checks{display:flex;gap:22px;flex-wrap:wrap;}
+  .discovery-check{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;color:var(--navy);cursor:pointer;}
+  .discovery-check input{width:16px;height:16px;accent-color:var(--teal);cursor:pointer;}
+
+  /* Explore toggles */
+  .explore-label{font-size:12px;font-weight:700;color:var(--gray-blue);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
   .toggle-group{display:flex;gap:12px;margin-bottom:22px;flex-wrap:wrap;}
   .cap-toggle{
     padding:10px 22px;
@@ -31,17 +41,48 @@
   .hub-wrap{width:100%;display:flex;justify-content:center;margin:20px 0 8px;}
   .hub-wrap svg{width:100%;max-width:640px;height:auto;}
   .hub-node-label{font-size:11px;fill:var(--navy);font-weight:600;}
+  .hub-node-stat{font-size:8.5px;fill:var(--gray-blue);font-weight:600;}
   .hub-center-label{font-size:13px;fill:#fff;font-weight:700;}
+  .hub-node-group{cursor:pointer;}
 
+  /* Channel focus panel */
+  .focus-panel{border:1px solid var(--teal);border-radius:12px;background:var(--bg-soft);padding:24px 26px;margin:8px 0 32px;position:relative;}
+  .focus-panel-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--gray-blue);font-size:20px;cursor:pointer;line-height:1;padding:4px;font-family:inherit;}
+  .focus-panel-close:hover{color:var(--navy);}
+  .focus-panel-title{font-size:17px;font-weight:800;color:var(--navy);margin-bottom:4px;padding-right:24px;}
+  .focus-panel-sub{font-size:12.5px;color:var(--gray-blue);margin-bottom:16px;}
+  .focus-item{display:flex;gap:12px;padding:12px 0;border-top:1px solid var(--border);}
+  .focus-item:first-of-type{border-top:none;padding-top:0;}
+  .focus-item-badge{flex:none;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;padding:3px 9px;border-radius:12px;height:fit-content;white-space:nowrap;margin-top:1px;}
+  .focus-item-badge.primary{background:var(--teal);color:#fff;}
+  .focus-item-badge.partial{background:none;border:1.5px solid var(--teal);color:var(--teal);}
+  .focus-item-text{font-size:13px;color:var(--navy);line-height:1.55;}
+  .focus-item-text strong{display:block;margin-bottom:3px;}
+  .focus-none{color:var(--gray-blue);font-style:italic;font-size:13px;}
+  .focus-ai-link{display:inline-block;margin-top:14px;font-size:12.5px;font-weight:700;color:var(--teal);text-decoration:none;}
+  .focus-ai-link:hover{text-decoration:underline;}
+
+  /* Capability cards */
   .capability-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:40px 0 8px;}
   .cap-card{border:1px solid var(--border);border-radius:12px;padding:22px;background:var(--bg-soft);}
+  .cap-card-deployed-note{display:inline-block;font-size:11px;font-weight:700;color:var(--teal);background:rgba(0,213,203,.12);border-radius:12px;padding:3px 10px;margin-bottom:10px;}
   .cap-card-label{font-size:16px;font-weight:800;color:var(--navy);margin-bottom:8px;}
   .cap-card-desc{font-size:13.5px;color:var(--navy);opacity:.85;line-height:1.55;margin-bottom:14px;}
-  .cap-card-reduces{font-size:12.5px;color:var(--navy);line-height:1.6;margin-bottom:14px;}
-  .cap-card-reduces-label{color:var(--teal);display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:4px;}
-  .cap-card-evidence{font-size:11.5px;color:var(--gray-blue);border-top:1px solid var(--border);padding-top:10px;line-height:1.5;}
+  .cap-card-reduces{font-size:12.5px;color:var(--navy);line-height:1.6;margin-bottom:16px;}
+  .cap-card-section-label{color:var(--teal);display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:8px;}
+  .cap-practice-list{list-style:none;margin:0 0 16px;padding:0;display:flex;flex-direction:column;gap:9px;}
+  .cap-practice-item{font-size:12.5px;color:var(--navy);opacity:.9;line-height:1.55;}
+  .cap-tag{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.03em;color:var(--gray-blue);border:1px solid var(--border);border-radius:10px;padding:1px 7px;margin-right:7px;text-transform:uppercase;vertical-align:middle;white-space:nowrap;}
+
+  .cap-card-stat{margin-top:4px;padding-top:16px;border-top:1px solid var(--border);}
+  .cap-card-stat-value{font-size:34px;font-weight:800;color:var(--navy);line-height:1;}
+  .cap-card-stat-caption{font-size:12.5px;color:var(--navy);opacity:.85;margin-top:6px;line-height:1.5;}
+  .cap-card-stat-note{font-size:11.5px;color:var(--gray-blue);margin-top:6px;line-height:1.5;font-style:italic;}
+  .cap-card-stat-source{font-size:11px;color:var(--gray-blue);margin-top:8px;}
 
   .cap-empty-prompt{grid-column:1/-1;color:var(--gray-blue);font-size:14px;font-style:italic;padding:36px;text-align:center;border:1px dashed var(--border);border-radius:12px;}
+
+  .closing-line{color:var(--gray-blue);font-size:14px;font-style:italic;margin:14px 0 0;}
 
   @media (max-width:700px){
     .capability-cards{grid-template-columns:1fr;}
@@ -65,8 +106,20 @@
 <section class="section" id="channels">
   <p class="eyebrow">Exfiltration Channels</p>
   <h1 class="page-title">Where your data actually leaves</h1>
-  <p class="page-sub">Six channels account for the overwhelming majority of enterprise data exfiltration. Select one or more capabilities below to see where each closes the gap.</p>
+  <p class="page-sub">Six channels account for the overwhelming majority of enterprise data exfiltration. Click a channel to see what covers it, or explore a capability below.</p>
 
+  <div class="discovery-box">
+    <div class="discovery-title">What's already in place?</div>
+    <div class="discovery-sub">Mark what this customer already has deployed, from any vendor — the diagram will settle back whichever channels that already covers.</div>
+    <div class="discovery-checks" id="discovery-checks">
+      <label class="discovery-check"><input type="checkbox" data-cap="DSPM"> DSPM</label>
+      <label class="discovery-check"><input type="checkbox" data-cap="SSE"> SSE</label>
+      <label class="discovery-check"><input type="checkbox" data-cap="Identity"> Identity</label>
+      <label class="discovery-check"><input type="checkbox" data-cap="EDR"> EDR</label>
+    </div>
+  </div>
+
+  <p class="explore-label">Explore a capability</p>
   <div class="toggle-group" id="capability-toggles">
     <button class="cap-toggle" data-cap="DSPM" type="button">DSPM</button>
     <button class="cap-toggle" data-cap="SSE" type="button">SSE</button>
@@ -77,14 +130,17 @@
   <p class="channel-counter" id="channel-counter">0 / 6 exfiltration channels addressed</p>
 
   <div class="hub-wrap">
-    <svg id="hub-svg" viewBox="0 0 640 380" aria-label="Exfiltration channels diagram"></svg>
+    <svg id="hub-svg" viewBox="0 0 640 420" aria-label="Exfiltration channels diagram"></svg>
   </div>
+
+  <div id="focus-panel-wrap"></div>
 
   <div class="capability-cards" id="capability-cards">
     <p class="cap-empty-prompt" id="cap-empty-prompt">Select a capability above to see how it reduces exfiltration risk.</p>
   </div>
 
   <p class="stat-footnote">For reference: IBM's 2025 Cost of a Data Breach Report puts average breach costs in the $4.4M&ndash;$4.9M range depending on how the breach began — figures shown per capability above are independently measured, not additive.</p>
+  <p class="closing-line">This maps the general pattern — the next step is walking it against what's actually running in your environment.</p>
 </section>
 
 <footer>
@@ -125,52 +181,126 @@
     'endpoint':     { DSPM:null,      SSE:null,      Identity:null,      EDR:'primary' }
   };
 
+  // Short supporting stat per channel (only where an independently published IBM figure exists)
+  var CHANNEL_STATS = {
+    'credentials':  { short:'$4.67M avg. breach cost', full:'$4.67M average breach cost — IBM 2025' },
+    'phishing':     { short:'16% of breaches start here', full:'16% of breaches start here, the single most common entry point — IBM 2025' },
+    'third-party':  { short:'267 days avg. to detect', full:'267 days average time to detect, the longest of any category — IBM 2025' },
+    'ai-tools':     { short:'20% involve shadow AI', full:'20% of breaches now involve unsanctioned AI tools, adding $670K on average — IBM 2025' }
+  };
+
+  // Why each capability covers a given channel, surfaced when a node is clicked
+  var CHANNEL_WHY = {
+    'credentials': {
+      DSPM: 'Classifies which credential stores and secrets are sensitive, so leaked or overshared access can be flagged before it’s exploited.',
+      SSE: 'Inspects traffic in real time, so a compromised login still can’t move a sensitive file out through an unsanctioned upload or webmail.',
+      Identity: 'Vaults privileged accounts and grants just-in-time access, so a stolen password rarely opens a standing door.',
+      EDR: 'Flags anomalous login and process behavior on the endpoint itself when a stolen credential is used to sign in.'
+    },
+    'phishing': {
+      SSE: 'Inline DLP blocks or quarantines sensitive files at the point of upload, email, or share — the moment a phished account tries to move data out.',
+      EDR: 'Detects the follow-on activity — credential dumping, unusual process chains — that typically follows a successful phishing click.'
+    },
+    'cloud-saas': {
+      DSPM: 'Scans cloud storage and SaaS apps agentlessly, flagging overshared or externally exposed sensitive data for remediation.',
+      SSE: 'Extends policy to unsanctioned SaaS and personal cloud storage apps, closing the channel DSPM’s classification feeds into.'
+    },
+    'ai-tools': {
+      DSPM: 'Specifically watches AI surfaces — flags sensitive data before it’s pasted into a public AI tool, and tracks what AI agents can access.',
+      SSE: 'Inline inspection extends to AI tool traffic, catching sensitive data in transit even where classification hasn’t been applied yet.'
+    },
+    'third-party': {
+      DSPM: 'Classification travels with the data, so sensitivity is still known even when a vendor or third party has access to it.',
+      Identity: 'Vendor access is granted just-in-time and automatically revoked the moment an engagement ends, rather than left standing.'
+    },
+    'endpoint': {
+      EDR: 'Monitors endpoint behavior directly and isolates a compromised device from the network within seconds of detection.'
+    }
+  };
+
   var CAPABILITIES = [
     {
       id:'DSPM',
       label:'DSPM',
       description:'Discovers and classifies sensitive data across cloud, SaaS, and AI pipelines.',
       reduces:'Once data is classified, every other control can act on what’s actually sensitive instead of guessing. That’s what turns "this might be private" into a rule DLP and access policies can actually enforce.',
-      evidence:'IBM lists data discovery, classification, and encryption among its top recommended cost reducers for 2025.'
+      practice:[
+        { tag:null, text:'Agentless scanning across cloud storage, SaaS apps, and data warehouses — no agents to deploy' },
+        { tag:null, text:'Classifies by content and context, not just filenames, covering PII, financial data, source code, and regulated categories' },
+        { tag:null, text:'Flags overshared or externally exposed sensitive data for remediation' },
+        { tag:'AI-DSPM', text:'Specifically watches AI surfaces — flags sensitive data before it’s pasted into a public AI tool, and tracks what AI agents can access' }
+      ],
+      stat:{ value:'$208K', caption:'lower average breach cost from encryption alone, one part of the broader data security fundamentals (discovery, classification, encryption) IBM recommends.', source:'IBM 2025 Cost of a Data Breach Report.' }
     },
     {
       id:'SSE',
       label:'SSE',
       description:'Enforces zero trust access and inline data-loss prevention across web, cloud, and private app traffic.',
       reduces:'Even if a phishing email succeeds and an account is compromised, SSE inspects the traffic itself in real time — so the sensitive file still can’t leave through an unsanctioned upload, personal cloud app, or webmail.',
-      evidence:'Organizations with zero trust architecture in place report $1.76M lower average breach cost (IBM 2025).'
+      practice:[
+        { tag:'SWG', text:'Inspects web traffic inline for every user regardless of location, blocking malicious sites and risky downloads before they reach the endpoint' },
+        { tag:'DLP', text:'Blocks or quarantines sensitive files at the point of upload, email, or share — not after the fact' },
+        { tag:'ZTNA', text:'Replaces broad VPN access with per-application, per-session access, so a compromised account can’t move laterally' },
+        { tag:'CASB', text:'Extends visibility and policy to unsanctioned SaaS and personal cloud storage apps' }
+      ],
+      stat:{ value:'$1.76M', caption:'lower average breach cost for organizations with zero trust architecture in place.', source:'IBM 2025 Cost of a Data Breach Report.' }
     },
     {
       id:'Identity',
       label:'Identity',
       description:'Governs who and what can access sensitive systems, enforcing least-privilege and just-in-time access.',
       reduces:'A stolen password or a compromised vendor login only matters if it opens a door. Removing standing access means that door stays shut except for the exact moment and scope it was actually needed.',
-      evidence:'IBM’s top recommended lever for 2025 is fortifying identity and access management; credential-based breaches average $4.67M.'
+      practice:[
+        { tag:'PAM', text:'Privileged accounts are vaulted rather than held directly by admins — checked out per session, then rotated automatically' },
+        { tag:'PAM', text:'Just-in-time access replaces standing admin rights with time-bound grants tied to a specific task' },
+        { tag:'ITDR', text:'Continuous identity threat detection flags anomalous access patterns, for human and machine identities alike' },
+        { tag:'IGA', text:'Access is automatically revoked the moment someone, or some vendor, offboards, rather than relying on a manual process' }
+      ],
+      stat:{ value:'$4.67M', caption:'average cost of a credential-based breach — the cost this control is meant to prevent, not a measured savings figure.', note:'IBM’s top recommended lever for 2025 is fortifying identity and access management.', source:'IBM 2025 Cost of a Data Breach Report.' }
     },
     {
       id:'EDR',
       label:'EDR',
       description:'Detects and responds to malicious activity directly on endpoints and devices.',
       reduces:'Exfiltration rarely happens at the moment of compromise — it happens hours or days later, while an attacker moves laterally or stages data to leave. EDR is what catches that window and isolates the device first.',
-      evidence:'Organizations using AI-driven security automation extensively report $1.9M lower average breach cost (IBM 2025).'
+      practice:[
+        { tag:null, text:'Monitors every endpoint for behavior, not just known malware signatures — credential dumping, unusual process chains, mass file access' },
+        { tag:null, text:'Automatically isolates a compromised device from the network within seconds of detection' },
+        { tag:null, text:'Can roll back malicious changes without a full device rebuild' },
+        { tag:null, text:'Feeds detections into a broader pipeline so an endpoint alert can be correlated with identity or network activity' }
+      ],
+      stat:{ value:'$1.9M', caption:'lower average breach cost for organizations using AI-driven security automation extensively.', source:'IBM 2025 Cost of a Data Breach Report.' }
     }
   ];
+  var CAP_BY_ID = {};
+  CAPABILITIES.forEach(function(c){ CAP_BY_ID[c.id] = c; });
 
-  var activeCaps = {};
+  var activeCaps = {};   // capabilities being explored (pills)
+  var inPlaceCaps = {};  // capabilities the customer already has (checkboxes)
+  var focusedChannel = null;
+
+  function bestLevel(channelId, capsObj){
+    var best = null;
+    Object.keys(capsObj).forEach(function(capId){
+      var level = COVERAGE[channelId][capId];
+      if (level === 'primary') best = 'primary';
+      else if (level === 'partial' && best !== 'primary') best = 'partial';
+    });
+    return best;
+  }
 
   // ---------- Hub diagram ----------
   var ns = 'http://www.w3.org/2000/svg';
   var hubSvg = document.getElementById('hub-svg');
-  var cx = 320, cy = 190, r = 140;
+  var cx = 320, cy = 200, r = 140;
   var angles = [-90,-30,30,90,150,210].map(function(d){ return d * Math.PI / 180; });
   var nodePositions = CHANNELS.map(function(channel, i){
     var a = angles[i];
     return { channel:channel, x: cx + r*Math.cos(a), y: cy + r*Math.sin(a) };
   });
-  var badgeEls = {};
+  var nodeRefs = {};
 
   function buildHub(){
-    // connecting lines
     nodePositions.forEach(function(p){
       var line = document.createElementNS(ns,'line');
       line.setAttribute('x1', cx);
@@ -183,9 +313,21 @@
       hubSvg.appendChild(line);
     });
 
-    // outer nodes
     nodePositions.forEach(function(p){
-      var g = document.createElementNS(ns,'g');
+      var outer = document.createElementNS(ns,'g');
+      outer.setAttribute('class', 'hub-node-group');
+
+      var highlight = document.createElementNS(ns,'circle');
+      highlight.setAttribute('cx', p.x);
+      highlight.setAttribute('cy', p.y);
+      highlight.setAttribute('r', 36);
+      highlight.setAttribute('fill', 'none');
+      highlight.setAttribute('stroke', COLORS.navy);
+      highlight.setAttribute('stroke-width', '2');
+      highlight.setAttribute('opacity', '0');
+      outer.appendChild(highlight);
+
+      var content = document.createElementNS(ns,'g');
 
       var circle = document.createElementNS(ns,'circle');
       circle.setAttribute('cx', p.x);
@@ -194,7 +336,7 @@
       circle.setAttribute('fill', '#fff');
       circle.setAttribute('stroke', p.channel.accent === 'pink' ? COLORS.pink : COLORS.grayBlue);
       circle.setAttribute('stroke-width', p.channel.accent === 'pink' ? '2.5' : '1.2');
-      g.appendChild(circle);
+      content.appendChild(circle);
 
       var iconScale = 20 / 24;
       var iconWrap = document.createElementNS(ns,'g');
@@ -205,7 +347,7 @@
       iconWrap.setAttribute('stroke-linejoin', 'round');
       iconWrap.setAttribute('stroke', p.channel.accent === 'pink' ? COLORS.pink : COLORS.navy);
       iconWrap.innerHTML = ICONS[p.channel.icon];
-      g.appendChild(iconWrap);
+      content.appendChild(iconWrap);
 
       var label = document.createElementNS(ns,'text');
       label.setAttribute('x', p.x);
@@ -213,24 +355,56 @@
       label.setAttribute('text-anchor','middle');
       label.setAttribute('class','hub-node-label');
       label.textContent = p.channel.label;
-      g.appendChild(label);
+      content.appendChild(label);
 
-      // coverage badge (hidden until active)
-      var badge = document.createElementNS(ns,'circle');
-      badge.setAttribute('cx', p.x + 22);
-      badge.setAttribute('cy', p.y - 22);
-      badge.setAttribute('r', 8);
-      badge.setAttribute('fill', 'none');
-      badge.setAttribute('stroke', COLORS.teal);
-      badge.setAttribute('stroke-width', '2.5');
-      badge.setAttribute('opacity', '0');
-      g.appendChild(badge);
-      badgeEls[p.channel.id] = badge;
+      var stat = CHANNEL_STATS[p.channel.id];
+      if (stat){
+        var statText = document.createElementNS(ns,'text');
+        statText.setAttribute('x', p.x);
+        statText.setAttribute('y', p.y + 61);
+        statText.setAttribute('text-anchor','middle');
+        statText.setAttribute('class','hub-node-stat');
+        statText.textContent = stat.short;
+        var titleEl = document.createElementNS(ns,'title');
+        titleEl.textContent = stat.full;
+        statText.appendChild(titleEl);
+        content.appendChild(statText);
+      }
 
-      hubSvg.appendChild(g);
+      outer.appendChild(content);
+
+      // coverage badge: teal circle (primary/partial) or gray dash (uncovered)
+      var badgeCircle = document.createElementNS(ns,'circle');
+      badgeCircle.setAttribute('cx', p.x + 22);
+      badgeCircle.setAttribute('cy', p.y - 22);
+      badgeCircle.setAttribute('r', 8);
+      badgeCircle.setAttribute('fill', 'none');
+      badgeCircle.setAttribute('stroke', COLORS.teal);
+      badgeCircle.setAttribute('stroke-width', '2.5');
+      badgeCircle.setAttribute('opacity', '0');
+      outer.appendChild(badgeCircle);
+
+      var badgeDash = document.createElementNS(ns,'line');
+      badgeDash.setAttribute('x1', p.x + 17);
+      badgeDash.setAttribute('y1', p.y - 22);
+      badgeDash.setAttribute('x2', p.x + 27);
+      badgeDash.setAttribute('y2', p.y - 22);
+      badgeDash.setAttribute('stroke', COLORS.grayBlue);
+      badgeDash.setAttribute('stroke-width', '2.5');
+      badgeDash.setAttribute('stroke-linecap', 'round');
+      badgeDash.setAttribute('opacity', '0');
+      outer.appendChild(badgeDash);
+
+      outer.addEventListener('click', function(){
+        focusedChannel = (focusedChannel === p.channel.id) ? null : p.channel.id;
+        refreshDiagram();
+        renderFocusPanel();
+      });
+
+      hubSvg.appendChild(outer);
+      nodeRefs[p.channel.id] = { content:content, highlight:highlight, badgeCircle:badgeCircle, badgeDash:badgeDash };
     });
 
-    // center node
     var centerCircle = document.createElementNS(ns,'circle');
     centerCircle.setAttribute('cx', cx);
     centerCircle.setAttribute('cy', cy);
@@ -255,37 +429,84 @@
     hubSvg.appendChild(centerText2);
   }
 
-  function channelCoverageLevel(channelId){
-    var best = null;
-    Object.keys(activeCaps).forEach(function(capId){
-      var level = COVERAGE[channelId][capId];
-      if (level === 'primary') best = 'primary';
-      else if (level === 'partial' && best !== 'primary') best = 'partial';
-    });
-    return best;
-  }
-
-  function refreshCoverage(){
+  function refreshDiagram(){
     var addressedCount = 0;
     CHANNELS.forEach(function(channel){
-      var level = channelCoverageLevel(channel.id);
-      var badge = badgeEls[channel.id];
-      if (level === 'primary'){
-        badge.setAttribute('fill', COLORS.teal);
-        badge.setAttribute('opacity', '1');
+      var exploreLevel = bestLevel(channel.id, activeCaps);
+      var inPlaceLevel = bestLevel(channel.id, inPlaceCaps);
+      var isMuted = inPlaceLevel !== null;
+      var refs = nodeRefs[channel.id];
+
+      refs.content.setAttribute('opacity', isMuted ? '0.4' : '1');
+      refs.highlight.setAttribute('opacity', focusedChannel === channel.id ? '1' : '0');
+
+      if (exploreLevel === 'primary'){
+        refs.badgeCircle.setAttribute('fill', COLORS.teal);
+        refs.badgeCircle.setAttribute('opacity', '1');
+        refs.badgeDash.setAttribute('opacity', '0');
         addressedCount++;
-      } else if (level === 'partial'){
-        badge.setAttribute('fill', '#fff');
-        badge.setAttribute('opacity', '1');
+      } else if (exploreLevel === 'partial'){
+        refs.badgeCircle.setAttribute('fill', '#fff');
+        refs.badgeCircle.setAttribute('opacity', '1');
+        refs.badgeDash.setAttribute('opacity', '0');
         addressedCount++;
+      } else if (isMuted){
+        refs.badgeCircle.setAttribute('opacity', '0');
+        refs.badgeDash.setAttribute('opacity', '0');
       } else {
-        badge.setAttribute('opacity', '0');
+        refs.badgeCircle.setAttribute('opacity', '0');
+        refs.badgeDash.setAttribute('opacity', '0.7');
       }
     });
     document.getElementById('channel-counter').textContent = addressedCount + ' / 6 exfiltration channels addressed';
   }
 
-  // ---------- Capability toggles ----------
+  // ---------- Channel focus panel ----------
+  var focusWrap = document.getElementById('focus-panel-wrap');
+
+  function renderFocusPanel(){
+    if (!focusedChannel){
+      focusWrap.innerHTML = '';
+      return;
+    }
+    var channel = CHANNELS.filter(function(c){ return c.id === focusedChannel; })[0];
+    var coverageForChannel = COVERAGE[channel.id];
+    var covering = CAPABILITIES.filter(function(c){ return coverageForChannel[c.id]; });
+
+    var itemsHtml;
+    if (covering.length === 0){
+      itemsHtml = '<p class="focus-none">No capability in this toolkit directly covers this channel today.</p>';
+    } else {
+      itemsHtml = covering.map(function(cap){
+        var level = coverageForChannel[cap.id];
+        var why = (CHANNEL_WHY[channel.id] && CHANNEL_WHY[channel.id][cap.id]) || cap.reduces;
+        return '<div class="focus-item">' +
+          '<span class="focus-item-badge ' + level + '">' + (level === 'primary' ? 'Primary' : 'Partial') + '</span>' +
+          '<div class="focus-item-text"><strong>' + cap.label + '</strong>' + why + '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    var aiLink = channel.id === 'ai-tools'
+      ? '<a class="focus-ai-link" href="dspm.html">See the full AI data risk story &rarr;</a>'
+      : '';
+
+    focusWrap.innerHTML = '<div class="focus-panel">' +
+      '<button class="focus-panel-close" type="button" aria-label="Close">&times;</button>' +
+      '<div class="focus-panel-title">' + channel.label + '</div>' +
+      '<div class="focus-panel-sub">What covers this channel, and why.</div>' +
+      itemsHtml +
+      aiLink +
+    '</div>';
+
+    focusWrap.querySelector('.focus-panel-close').addEventListener('click', function(){
+      focusedChannel = null;
+      refreshDiagram();
+      renderFocusPanel();
+    });
+  }
+
+  // ---------- Capability cards ----------
   var toggleButtons = document.querySelectorAll('.cap-toggle');
   var cardsContainer = document.getElementById('capability-cards');
 
@@ -298,11 +519,27 @@
     }
 
     cardsContainer.innerHTML = activeIds.map(function(cap){
+      var deployedNote = inPlaceCaps[cap.id] ? '<div class="cap-card-deployed-note">Already deployed here</div>' : '';
+
+      var practiceHtml = cap.practice.map(function(item){
+        var tagHtml = item.tag ? '<span class="cap-tag">' + item.tag + '</span>' : '';
+        return '<li class="cap-practice-item">' + tagHtml + item.text + '</li>';
+      }).join('');
+
+      var noteHtml = cap.stat.note ? '<div class="cap-card-stat-note">' + cap.stat.note + '</div>' : '';
+
       return '<div class="cap-card">' +
+        deployedNote +
         '<div class="cap-card-label">' + cap.label + '</div>' +
         '<div class="cap-card-desc">' + cap.description + '</div>' +
-        '<div class="cap-card-reduces"><span class="cap-card-reduces-label">How this reduces risk</span>' + cap.reduces + '</div>' +
-        '<div class="cap-card-evidence">' + cap.evidence + '</div>' +
+        '<div class="cap-card-reduces"><span class="cap-card-section-label">How this reduces risk</span>' + cap.reduces + '</div>' +
+        '<div><span class="cap-card-section-label">In practice</span><ul class="cap-practice-list">' + practiceHtml + '</ul></div>' +
+        '<div class="cap-card-stat">' +
+          '<div class="cap-card-stat-value">' + cap.stat.value + '</div>' +
+          '<div class="cap-card-stat-caption">' + cap.stat.caption + '</div>' +
+          noteHtml +
+          '<div class="cap-card-stat-source">' + cap.stat.source + '</div>' +
+        '</div>' +
       '</div>';
     }).join('');
   }
@@ -317,14 +554,30 @@
         activeCaps[capId] = true;
         btn.classList.add('active');
       }
-      refreshCoverage();
+      refreshDiagram();
+      renderCards();
+    });
+  });
+
+  // ---------- Discovery checkboxes ----------
+  var discoveryChecks = document.querySelectorAll('#discovery-checks input[type=checkbox]');
+  discoveryChecks.forEach(function(chk){
+    chk.addEventListener('change', function(){
+      var capId = chk.dataset.cap;
+      if (chk.checked){
+        inPlaceCaps[capId] = true;
+      } else {
+        delete inPlaceCaps[capId];
+      }
+      refreshDiagram();
       renderCards();
     });
   });
 
   buildHub();
-  refreshCoverage();
+  refreshDiagram();
   renderCards();
+  renderFocusPanel();
 
   // ---------- Reveal on scroll ----------
   var sections = document.querySelectorAll('.section');
