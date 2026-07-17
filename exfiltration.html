@@ -3,20 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Exfiltration Channels | Xalient</title>
+<title>Data Risk &amp; Coverage | Xalient</title>
 <meta name="description" content="Interactive briefing on data exfiltration channels and security capability coverage.">
 <link rel="stylesheet" href="shared.css">
 <style>
   .page-title{font-size:44px;font-weight:800;color:var(--navy);margin:0 0 14px;line-height:1.15;}
   .page-sub{color:var(--gray-blue);font-size:15px;margin:0 0 32px;max-width:640px;}
-
-  /* Discovery step */
-  .discovery-box{border:1px dashed var(--border);border-radius:12px;background:var(--bg-soft);padding:20px 24px;margin-bottom:32px;}
-  .discovery-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:3px;}
-  .discovery-sub{font-size:12px;color:var(--gray-blue);margin-bottom:14px;}
-  .discovery-checks{display:flex;gap:22px;flex-wrap:wrap;}
-  .discovery-check{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;color:var(--navy);cursor:pointer;}
-  .discovery-check input{width:16px;height:16px;accent-color:var(--teal);cursor:pointer;}
 
   /* Explore toggles */
   .explore-label{font-size:12px;font-weight:700;color:var(--gray-blue);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
@@ -65,7 +57,6 @@
   /* Capability cards */
   .capability-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:40px 0 8px;}
   .cap-card{border:1px solid var(--border);border-radius:12px;padding:22px;background:var(--bg-soft);}
-  .cap-card-deployed-note{display:inline-block;font-size:11px;font-weight:700;color:var(--teal);background:rgba(0,213,203,.12);border-radius:12px;padding:3px 10px;margin-bottom:10px;}
   .cap-card-label{font-size:16px;font-weight:800;color:var(--navy);margin-bottom:8px;}
   .cap-card-desc{font-size:13.5px;color:var(--navy);opacity:.85;line-height:1.55;margin-bottom:14px;}
   .cap-card-reduces{font-size:12.5px;color:var(--navy);line-height:1.6;margin-bottom:16px;}
@@ -99,25 +90,14 @@
   <nav class="top-nav">
     <a href="index.html">Home</a>
     <a href="dspm.html">DSPM &amp; AI Data Risk</a>
-    <a href="exfiltration.html" class="current">Exfiltration Channels</a>
+    <a href="exfiltration.html" class="current">Data Risk &amp; Coverage</a>
   </nav>
 </header>
 
 <section class="section" id="channels">
   <p class="eyebrow">Exfiltration Channels</p>
   <h1 class="page-title">Where your data actually leaves</h1>
-  <p class="page-sub">Six channels account for the overwhelming majority of enterprise data exfiltration. Click a channel to see what covers it, or explore a capability below.</p>
-
-  <div class="discovery-box">
-    <div class="discovery-title">What's already in place?</div>
-    <div class="discovery-sub">Mark what this customer already has deployed, from any vendor — the diagram will settle back whichever channels that already covers.</div>
-    <div class="discovery-checks" id="discovery-checks">
-      <label class="discovery-check"><input type="checkbox" data-cap="DSPM"> DSPM</label>
-      <label class="discovery-check"><input type="checkbox" data-cap="SSE"> SSE</label>
-      <label class="discovery-check"><input type="checkbox" data-cap="Identity"> Identity</label>
-      <label class="discovery-check"><input type="checkbox" data-cap="EDR"> EDR</label>
-    </div>
-  </div>
+  <p class="page-sub">Six channels account for the overwhelming majority of enterprise data exfiltration. Select a capability below, or click a channel directly, to see how each closes the gap.</p>
 
   <p class="explore-label">Explore a capability</p>
   <div class="toggle-group" id="capability-toggles">
@@ -240,7 +220,7 @@
       practice:[
         { tag:'SWG', text:'Inspects web traffic inline for every user regardless of location, blocking malicious sites and risky downloads before they reach the endpoint' },
         { tag:'DLP', text:'Blocks or quarantines sensitive files at the point of upload, email, or share — not after the fact' },
-        { tag:'ZTNA', text:'Replaces broad VPN access with per-application, per-session access, so a compromised account can’t move laterally' },
+        { tag:'ZTNA', text:'Every access request is evaluated using identity, device posture, and risk signals in real time — not a one-time login that grants standing network access' },
         { tag:'CASB', text:'Extends visibility and policy to unsanctioned SaaS and personal cloud storage apps' }
       ],
       stat:{ value:'$1.76M', caption:'lower average breach cost for organizations with zero trust architecture in place.', source:'IBM 2025 Cost of a Data Breach Report.' }
@@ -251,10 +231,11 @@
       description:'Governs who and what can access sensitive systems, enforcing least-privilege and just-in-time access.',
       reduces:'A stolen password or a compromised vendor login only matters if it opens a door. Removing standing access means that door stays shut except for the exact moment and scope it was actually needed.',
       practice:[
-        { tag:'PAM', text:'Privileged accounts are vaulted rather than held directly by admins — checked out per session, then rotated automatically' },
+        { tag:'PAM', text:'Privileged accounts are vaulted rather than held directly by admins — checked out per session, then rotated automatically, with every action logged' },
         { tag:'PAM', text:'Just-in-time access replaces standing admin rights with time-bound grants tied to a specific task' },
-        { tag:'ITDR', text:'Continuous identity threat detection flags anomalous access patterns, for human and machine identities alike' },
-        { tag:'IGA', text:'Access is automatically revoked the moment someone, or some vendor, offboards, rather than relying on a manual process' }
+        { tag:'IGA', text:'Access certification campaigns catch standing entitlements that accumulated over time but are no longer needed' },
+        { tag:'IGA', text:'Joiner-mover-leaver automation keeps access aligned to role as people change jobs internally, not just when they leave' },
+        { tag:'ITDR', text:'Continuous identity threat detection flags anomalous access in real time, for human and machine identities alike' }
       ],
       stat:{ value:'$4.67M', caption:'average cost of a credential-based breach — the cost this control is meant to prevent, not a measured savings figure.', note:'IBM’s top recommended lever for 2025 is fortifying identity and access management.', source:'IBM 2025 Cost of a Data Breach Report.' }
     },
@@ -276,7 +257,6 @@
   CAPABILITIES.forEach(function(c){ CAP_BY_ID[c.id] = c; });
 
   var activeCaps = {};   // capabilities being explored (pills)
-  var inPlaceCaps = {};  // capabilities the customer already has (checkboxes)
   var focusedChannel = null;
 
   function bestLevel(channelId, capsObj){
@@ -402,7 +382,7 @@
       });
 
       hubSvg.appendChild(outer);
-      nodeRefs[p.channel.id] = { content:content, highlight:highlight, badgeCircle:badgeCircle, badgeDash:badgeDash };
+      nodeRefs[p.channel.id] = { highlight:highlight, badgeCircle:badgeCircle, badgeDash:badgeDash };
     });
 
     var centerCircle = document.createElementNS(ns,'circle');
@@ -433,11 +413,8 @@
     var addressedCount = 0;
     CHANNELS.forEach(function(channel){
       var exploreLevel = bestLevel(channel.id, activeCaps);
-      var inPlaceLevel = bestLevel(channel.id, inPlaceCaps);
-      var isMuted = inPlaceLevel !== null;
       var refs = nodeRefs[channel.id];
 
-      refs.content.setAttribute('opacity', isMuted ? '0.4' : '1');
       refs.highlight.setAttribute('opacity', focusedChannel === channel.id ? '1' : '0');
 
       if (exploreLevel === 'primary'){
@@ -450,9 +427,6 @@
         refs.badgeCircle.setAttribute('opacity', '1');
         refs.badgeDash.setAttribute('opacity', '0');
         addressedCount++;
-      } else if (isMuted){
-        refs.badgeCircle.setAttribute('opacity', '0');
-        refs.badgeDash.setAttribute('opacity', '0');
       } else {
         refs.badgeCircle.setAttribute('opacity', '0');
         refs.badgeDash.setAttribute('opacity', '0.7');
@@ -519,8 +493,6 @@
     }
 
     cardsContainer.innerHTML = activeIds.map(function(cap){
-      var deployedNote = inPlaceCaps[cap.id] ? '<div class="cap-card-deployed-note">Already deployed here</div>' : '';
-
       var practiceHtml = cap.practice.map(function(item){
         var tagHtml = item.tag ? '<span class="cap-tag">' + item.tag + '</span>' : '';
         return '<li class="cap-practice-item">' + tagHtml + item.text + '</li>';
@@ -529,7 +501,6 @@
       var noteHtml = cap.stat.note ? '<div class="cap-card-stat-note">' + cap.stat.note + '</div>' : '';
 
       return '<div class="cap-card">' +
-        deployedNote +
         '<div class="cap-card-label">' + cap.label + '</div>' +
         '<div class="cap-card-desc">' + cap.description + '</div>' +
         '<div class="cap-card-reduces"><span class="cap-card-section-label">How this reduces risk</span>' + cap.reduces + '</div>' +
@@ -553,21 +524,6 @@
       } else {
         activeCaps[capId] = true;
         btn.classList.add('active');
-      }
-      refreshDiagram();
-      renderCards();
-    });
-  });
-
-  // ---------- Discovery checkboxes ----------
-  var discoveryChecks = document.querySelectorAll('#discovery-checks input[type=checkbox]');
-  discoveryChecks.forEach(function(chk){
-    chk.addEventListener('change', function(){
-      var capId = chk.dataset.cap;
-      if (chk.checked){
-        inPlaceCaps[capId] = true;
-      } else {
-        delete inPlaceCaps[capId];
       }
       refreshDiagram();
       renderCards();
