@@ -111,46 +111,46 @@
     {
       id:'identity', label:'Identity',
       desc:[
-        'Passwords only; limited visibility into who is accessing what.',
-        'MFA introduced for some systems; identity managed largely by hand.',
-        'MFA enforced broadly; centralized identity with partial automated lifecycle management.',
-        'Continuous, risk-based authentication with just-in-time access for human and machine identities alike.'
+        'Passwords or basic MFA only. Identity stores are on-premises and siloed. Access rules are static — set once, rarely reviewed.',
+        'MFA required in some places, including phishing-resistant methods (FIDO/WebAuthn) in pockets. Automated attribute and lifecycle management begins.',
+        'Phishing-resistant MFA and centralized identity management are the norm. Access decisions draw on near real-time risk and posture signals across cloud and on-prem.',
+        'Phishing-resistant MFA enforced for every user, every time. Access is continuously validated using real-time behavior analytics, with fully automated just-in-time, just-enough access.'
       ]
     },
     {
       id:'devices', label:'Devices',
       desc:[
-        'No consistent device inventory; unmanaged devices can connect freely.',
-        'Basic inventory exists; compliance is checked only at enrollment.',
-        'Real-time device compliance monitoring feeds into access decisions.',
-        'Continuous device risk assessment is built into every access decision.'
+        'Device inventory is incomplete or manual. No consistent compliance check before granting access. Unmanaged personal devices can often connect.',
+        'A basic device inventory exists. Compliance is checked at enrollment or login, but not continuously. EDR is deployed on some, not all, endpoints.',
+        'Device compliance and health are monitored in near real time and feed into access decisions. EDR coverage is broad; non-compliant devices are automatically restricted.',
+        'Every access decision factors in continuous, real-time device risk and posture. EDR and asset inventory are fully integrated with enforcement — non-compliant devices are isolated automatically.'
       ]
     },
     {
       id:'networks', label:'Networks',
       desc:[
-        'Flat network; broad access is granted once a VPN connection is established.',
-        'Some segmentation exists; perimeter-based controls still dominate.',
-        'Micro-segmentation in key areas; encrypted traffic is inspected.',
-        'Every connection is individually authenticated and encrypted — no implicit trust from network location.'
+        'Security relies on one large network perimeter (macro-segmentation). Once inside, traffic moves with minimal internal restriction. Encryption and key management are ad hoc.',
+        'Critical workloads are isolated into their own segments. Some service-specific interconnections replace broad access. Encryption is applied inconsistently.',
+        'Ingress/egress micro-perimeters exist alongside some internal micro-segmentation. Most internal and some external traffic is encrypted. Basic analytics flag anomalous activity.',
+        'Extensive micro-segmentation is built around dynamic, per-application profiles. Every connection uses just-in-time, just-enough network access. All traffic, internal and external, is encrypted end to end.'
       ]
     },
     {
       id:'apps', label:'Applications & Workloads',
       desc:[
-        'Access is granted at the network layer, not the application.',
-        'Some application-level controls exist; provisioning is largely manual.',
-        'Application access is context-aware; workloads are monitored continuously.',
-        'Every application interaction is authorized in real time based on identity, device, and risk.'
+        'Access is granted at the network layer, not the application. Authorization relies on static, local rules. Threat protection is bolted on, not built into the workflow.',
+        'Some applications enforce their own access controls. Provisioning is largely manual. A few workflows begin integrating basic threat protection signals.',
+        'Application access is context-aware, factoring in identity and device signals. Workloads are monitored continuously in production. Security testing is built into more of the development pipeline.',
+        'Every application interaction is authorized continuously using real-time risk analytics. Access is dynamic and scoped to the specific task. Security testing is fully integrated across the application lifecycle.'
       ]
     },
     {
       id:'data', label:'Data',
       desc:[
-        'Data classification is manual or nonexistent; access is broad by default.',
-        'Some classification is in place; encryption is applied inconsistently.',
-        'Data is classified and encrypted; access is tied to sensitivity.',
-        'Data is continuously discovered, classified, and governed — policy follows it everywhere it goes.'
+        'Data is inventoried manually, if at all. Classification is inconsistent or absent. Access is broad by default rather than tied to sensitivity.',
+        'Basic automated data inventory begins. Some encryption at rest is applied, particularly in cloud environments. Access starts to reflect classification in select systems.',
+        'Data inventory is largely automated. Access is governed by least privilege based on identity, device risk, and other attributes. Data in cloud or remote environments is encrypted at rest as standard.',
+        'Data categorization and labeling are automated enterprise-wide. Encryption is applied broadly at rest, in transit, and, where appropriate, in use, with cryptographic agility built in. Protection follows the data automatically wherever it moves.'
       ]
     }
   ];
