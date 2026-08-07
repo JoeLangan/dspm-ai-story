@@ -8,7 +8,10 @@
 <link rel="stylesheet" href="shared.css">
 <style>
   .page-title{font-size:44px;font-weight:800;color:var(--navy);margin:0 0 14px;line-height:1.15;}
-  .page-sub{color:var(--gray-blue);font-size:15px;margin:0 0 32px;max-width:640px;}
+  .page-sub{color:var(--gray-blue);font-size:15px;margin:0 0 28px;max-width:640px;}
+
+  .opening-callout{background:var(--bg-soft);border-left:4px solid var(--navy);padding:16px 20px;border-radius:8px;margin:0 0 8px;font-size:14.5px;color:var(--navy);line-height:1.5;max-width:720px;}
+  .opening-callout strong{font-weight:800;}
 
   /* Explore toggles */
   .explore-label{font-size:12px;font-weight:700;color:var(--gray-blue);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
@@ -75,6 +78,13 @@
 
   .closing-line{color:var(--gray-blue);font-size:14px;font-style:italic;margin:14px 0 0;}
 
+  .recap-panel{border:1px solid var(--border);border-radius:12px;background:var(--bg-soft);padding:20px 24px;margin:28px 0 8px;}
+  .recap-label{font-size:11px;font-weight:700;color:var(--gray-blue);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+  .recap-line{font-size:13.5px;color:var(--navy);line-height:1.6;margin-bottom:4px;}
+  .recap-line:last-child{margin-bottom:0;}
+  .recap-line strong{color:var(--navy);}
+  .recap-empty{color:var(--gray-blue);font-style:italic;font-size:14px;margin:0;}
+
   @media (max-width:700px){
     .capability-cards{grid-template-columns:1fr;}
   }
@@ -99,7 +109,10 @@
   <h1 class="page-title">Where your data actually leaves</h1>
   <p class="page-sub">Six channels account for the overwhelming majority of enterprise data exfiltration. Select a capability below, or click a channel directly, to see how each closes the gap.</p>
 
-  <p class="explore-label">Explore a capability</p>
+  <div class="opening-callout"><strong>No single point of failure.</strong> Attackers succeed just as often through credentials, phishing, cloud misconfiguration, vendor access, or endpoints — IBM's 2025 data alone spans $1.9M to $4.67M in breach cost depending on which channel is involved.</div>
+  <p class="stat-footnote">Source: IBM, <em>Cost of a Data Breach Report</em>, 2025.</p>
+
+  <p class="explore-label" style="margin-top:28px;">Explore a capability</p>
   <div class="toggle-group" id="capability-toggles">
     <button class="cap-toggle" data-cap="DSPM" type="button">DSPM</button>
     <button class="cap-toggle" data-cap="SSE" type="button">SSE</button>
@@ -120,6 +133,9 @@
   </div>
 
   <p class="stat-footnote">For reference: IBM's 2025 Cost of a Data Breach Report puts average breach costs in the $4.4M&ndash;$4.9M range depending on how the breach began — figures shown per capability above are independently measured, not additive.</p>
+
+  <div class="recap-panel" id="closing-recap"></div>
+
   <p class="closing-line">This maps the general pattern — the next step is walking it against what's actually running in your environment.</p>
 </section>
 
@@ -515,6 +531,33 @@
     }).join('');
   }
 
+  // ---------- Closing recap ----------
+  var recapEl = document.getElementById('closing-recap');
+
+  function updateRecap(){
+    var exploredCaps = CAPABILITIES.filter(function(c){ return activeCaps[c.id]; });
+
+    if (exploredCaps.length === 0){
+      recapEl.innerHTML = '<p class="recap-empty">Nothing explored yet — select a capability above, or click a channel, to start mapping coverage.</p>';
+      return;
+    }
+
+    var coveredChannels = CHANNELS.filter(function(ch){ return bestLevel(ch.id, activeCaps) !== null; });
+    var openChannels = CHANNELS.filter(function(ch){ return bestLevel(ch.id, activeCaps) === null; });
+    var capNames = exploredCaps.map(function(c){ return c.label; }).join(', ');
+    var coveredNames = coveredChannels.map(function(ch){ return ch.label; }).join(', ');
+
+    var html = '<div class="recap-label">Where this leaves things</div>' +
+      '<div class="recap-line">Explored: <strong>' + capNames + '</strong> — covering ' + coveredChannels.length + ' of 6 channels (' + coveredNames + ').</div>';
+
+    if (openChannels.length > 0){
+      var openNames = openChannels.map(function(ch){ return ch.label; }).join(', ');
+      html += '<div class="recap-line">Still open: <strong>' + openNames + '</strong>.</div>';
+    }
+
+    recapEl.innerHTML = html;
+  }
+
   toggleButtons.forEach(function(btn){
     btn.addEventListener('click', function(){
       var capId = btn.dataset.cap;
@@ -527,6 +570,7 @@
       }
       refreshDiagram();
       renderCards();
+      updateRecap();
     });
   });
 
@@ -534,6 +578,7 @@
   refreshDiagram();
   renderCards();
   renderFocusPanel();
+  updateRecap();
 
   // ---------- Reveal on scroll ----------
   var sections = document.querySelectorAll('.section');
