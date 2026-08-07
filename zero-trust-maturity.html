@@ -47,7 +47,21 @@
   .pillar-segment.active{background:var(--teal);color:#fff;}
   .pillar-desc{font-size:13px;color:var(--gray-blue);line-height:1.55;margin:0;}
 
+  .stat-footnote a{color:var(--teal);text-decoration:none;}
+  .stat-footnote a:hover{text-decoration:underline;}
+
+  .cross-cutting{border:1px dashed var(--border);border-radius:12px;background:var(--bg-soft);padding:20px 24px;margin:28px 0 8px;}
+  .cross-cutting-title{font-size:12px;font-weight:700;color:var(--gray-blue);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+  .cross-cutting-sub{font-size:12.5px;color:var(--gray-blue);margin-bottom:16px;}
+  .cross-cutting-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  .cross-cutting-item-label{font-size:13.5px;font-weight:800;color:var(--navy);margin-bottom:6px;}
+  .cross-cutting-item-desc{font-size:12.5px;color:var(--navy);opacity:.8;line-height:1.5;}
+
   .closing-line{color:var(--gray-blue);font-size:14px;font-style:italic;margin:24px 0 0;}
+
+  @media (max-width:700px){
+    .cross-cutting-grid{grid-template-columns:1fr;}
+  }
 
   @media (max-width:600px){
     .pillar-segments{flex-wrap:wrap;border-radius:10px;}
@@ -78,7 +92,7 @@
   <p class="page-sub">CISA's Zero Trust Maturity Model breaks Zero Trust into five pillars, each progressing through four stages. Set where the customer sits on each, live in the conversation, and see the shape of their posture take form.</p>
 
   <div class="opening-callout"><strong>Zero Trust isn't a product.</strong> It's a maturity curve — most organizations are further along in one or two pillars than the rest, and that imbalance is usually where the risk concentrates.</div>
-  <p class="stat-footnote">Framework: CISA, <em>Zero Trust Maturity Model 2.0</em>.</p>
+  <p class="stat-footnote">Framework: CISA, <a href="https://www.cisa.gov/zero-trust-maturity-model" target="_blank" rel="noopener"><em>Zero Trust Maturity Model 2.0</em></a>.</p>
 
   <div class="radar-wrap">
     <svg id="radar-svg" viewBox="0 0 640 400" aria-label="Zero Trust maturity radar chart"></svg>
@@ -92,6 +106,25 @@
   </div>
 
   <div id="pillar-rows"></div>
+
+  <div class="cross-cutting">
+    <div class="cross-cutting-title">Also part of the model</div>
+    <div class="cross-cutting-sub">CISA's framework layers three cross-cutting capabilities across all five pillars above — they're what make the pillars work together rather than as five separate programs.</div>
+    <div class="cross-cutting-grid">
+      <div>
+        <div class="cross-cutting-item-label">Visibility &amp; Analytics</div>
+        <div class="cross-cutting-item-desc">Continuous insight into user, device, and network activity — the telemetry every pillar's access decisions depend on.</div>
+      </div>
+      <div>
+        <div class="cross-cutting-item-label">Automation &amp; Orchestration</div>
+        <div class="cross-cutting-item-desc">Policy enforcement and response happen automatically, without waiting on a manual ticket or review.</div>
+      </div>
+      <div>
+        <div class="cross-cutting-item-label">Governance</div>
+        <div class="cross-cutting-item-desc">The policies and risk tolerances that keep all five pillars aligned and consistently enforced.</div>
+      </div>
+    </div>
+  </div>
 
   <p class="closing-line">This is a conversation starter, not a scored audit — the value is in seeing where the pillars are uneven, together.</p>
 </section>
