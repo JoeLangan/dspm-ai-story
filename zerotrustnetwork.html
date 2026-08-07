@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Secure Networking & Zero Trust Access | Xalient</title>
+<meta name="description" content="Interactive briefing on legacy network access risk and Zero Trust Network Access.">
+<link rel="stylesheet" href="shared.css">
+<style>
+  .page-title{font-size:44px;font-weight:800;color:var(--navy);margin:0 0 14px;line-height:1.15;}
+  .page-sub{color:var(--gray-blue);font-size:15px;margin:0 0 28px;max-width:640px;}
+
+  .opening-callout{background:var(--bg-soft);border-left:4px solid var(--navy);padding:16px 20px;border-radius:8px;margin:0 0 8px;font-size:14.5px;color:var(--navy);line-height:1.5;max-width:720px;}
+  .opening-callout strong{font-weight:800;}
+
+  .toggle-row{display:flex;align-items:center;gap:14px;margin:32px 0 8px;}
+  .toggle-label{font-size:14px;color:var(--gray-blue);font-weight:700;transition:color .3s;}
+  .toggle-label.active{color:var(--navy);}
+  .toggle-switch{width:50px;height:27px;border-radius:20px;background:#D9DEE3;border:none;position:relative;cursor:pointer;transition:background .3s;padding:0;flex:none;}
+  .toggle-switch .toggle-knob{position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .3s;}
+  .toggle-switch.on{background:var(--teal);}
+  .toggle-switch.on .toggle-knob{transform:translateX(23px);}
+
+  .reach-caption{text-align:center;font-size:13px;color:var(--gray-blue);margin:4px 0 8px;}
+  .reach-caption strong{color:var(--navy);}
+
+  .net-wrap{width:100%;display:flex;justify-content:center;margin:16px 0 8px;}
+  .net-wrap svg{width:100%;max-width:640px;height:auto;}
+  .net-node-label{font-size:11px;fill:var(--navy);font-weight:600;}
+  .net-center-label{font-size:12px;fill:#fff;font-weight:700;}
+  .blast-circle{transition:r 0.7s cubic-bezier(.4,0,.2,1), fill 0.5s ease;}
+
+  .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0 32px;}
+  .stat-tile{background:var(--bg-soft);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center;}
+  .stat-value{font-size:24px;font-weight:800;color:var(--navy);}
+  .stat-caption{font-size:12.5px;color:var(--gray-blue);margin-top:4px;}
+
+  .stat-callout{background:var(--bg-soft);border-left:4px solid var(--navy);padding:16px 20px;border-radius:8px;margin:28px 0;font-size:14.5px;color:var(--navy);line-height:1.5;}
+  .stat-callout strong{font-size:22px;display:inline-block;margin-right:4px;}
+
+  .cross-link{display:inline-block;margin-top:8px;font-size:13.5px;font-weight:700;color:var(--teal);text-decoration:none;}
+  .cross-link:hover{text-decoration:underline;}
+
+  @media (max-width:900px){
+    .stats-row{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" class="brand">
+    <img src="Xalient%20Logo.png" alt="Xalient" class="logo">
+    <span class="brand-sub">Xalient Interactive Toolkit</span>
+  </a>
+  <nav class="top-nav">
+    <a href="index.html">Home</a>
+    <a href="dspm.html">DSPM &amp; AI Data Risk</a>
+    <a href="exfiltration.html">Data Risk &amp; Coverage</a>
+    <a href="zero-trust-network.html" class="current">Secure Networking</a>
+    <a href="zero-trust-maturity.html">Zero Trust Maturity</a>
+    <a href="non-human-identity.html">Machine Identity</a>
+  </nav>
+</header>
+
+<section class="section" id="network">
+  <p class="eyebrow">Secure Networking</p>
+  <h1 class="page-title">One stolen credential shouldn't reach everything</h1>
+  <p class="page-sub">Most enterprise networks are still flat once you're past the front door. Toggle between a legacy VPN and Zero Trust Network Access to see what actually changes.</p>
+
+  <div class="opening-callout"><strong>VPN compromise</strong> was the confirmed entry vector in 73% of network intrusions in 2025 — and once an attacker is in, they reach the next system in just 34 minutes on average, down from 48 minutes the year before.</div>
+  <p class="stat-footnote">Source: Coalition, <em>2025 Cyber Claims Report</em> (VPN entry vector); Recorded Future, <em>2025 Identity Threat Landscape Report</em> (lateral movement time).</p>
+
+  <div class="toggle-row">
+    <span class="toggle-label active" id="label-legacy">Legacy / VPN</span>
+    <button class="toggle-switch" id="network-toggle" role="switch" aria-checked="false" aria-label="Toggle Zero Trust Access">
+      <span class="toggle-knob"></span>
+    </button>
+    <span class="toggle-label" id="label-ztna">Zero Trust Access</span>
+  </div>
+
+  <p class="reach-caption" id="reach-caption">Reach from one compromised device: <strong>all 6 systems</strong></p>
+
+  <div class="net-wrap">
+    <svg id="net-svg" viewBox="0 0 640 380" aria-label="Network reach diagram"></svg>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-tile"><div class="stat-value" id="stat-reachable">6 / 6</div><div class="stat-caption">Systems reachable from one device</div></div>
+    <div class="stat-tile"><div class="stat-value" id="stat-radius">Entire network</div><div class="stat-caption">Effective blast radius</div></div>
+    <div class="stat-tile"><div class="stat-value" id="stat-access">Always-on</div><div class="stat-caption">Standing access granted</div></div>
+  </div>
+
+  <div class="stat-callout">
+    <strong>29%</strong>faster year over year — that's how much less time defenders now have to catch an attacker before they move laterally.
+  </div>
+
+  <p class="supporting-line">ZTNA doesn't make the initial compromise less likely. It makes sure that compromise doesn't automatically become everything else's problem.</p>
+  <a class="cross-link" href="exfiltration.html">This is what SSE's ZTNA pillar does in the coverage model &rarr;</a>
+</section>
+
+<footer>
+  Xalient · Interactive briefing toolkit — for use in customer conversations only
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  var COLORS = { navy:'#110F51', teal:'#00D5CB', grayBlue:'#879FAC', riskHigh:'#D64545' };
+
+  var ICONS = {
+    dollar: '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>',
+    database: '<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5"/><path d="M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3"/>',
+    cloud: '<path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/>',
+    code: '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
+    briefcase: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>',
+    mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/>',
+    key: '<circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6"/><path d="M15.5 7.5l3 3L22 7l-3-3"/>'
+  };
+
+  var SYSTEMS = [
+    { id:'finance', label:'Finance systems', icon:'dollar' },
+    { id:'customer-data', label:'Customer data', icon:'database' },
+    { id:'cloud-workloads', label:'Cloud workloads', icon:'cloud' },
+    { id:'source-code', label:'Dev & source code', icon:'code' },
+    { id:'partner-systems', label:'Partner systems', icon:'briefcase' },
+    { id:'collab-tools', label:'Collaboration tools', icon:'mail' }
+  ];
+
+  var ns = 'http://www.w3.org/2000/svg';
+  var svg = document.getElementById('net-svg');
+  var cx = 320, cy = 190, r = 140;
+  var angles = [-90,-30,30,90,150,210].map(function(d){ return d * Math.PI / 180; });
+  var positions = SYSTEMS.map(function(sys, i){
+    var a = angles[i];
+    return { sys:sys, x: cx + r*Math.cos(a), y: cy + r*Math.sin(a) };
+  });
+
+  var LEGACY_RADIUS = 168;
+  var ZTNA_RADIUS = 52;
+
+  var blastCircle;
+
+  function buildDiagram(){
+    positions.forEach(function(p){
+      var line = document.createElementNS(ns,'line');
+      line.setAttribute('x1', cx);
+      line.setAttribute('y1', cy);
+      line.setAttribute('x2', p.x);
+      line.setAttribute('y2', p.y);
+      line.setAttribute('stroke', COLORS.grayBlue);
+      line.setAttribute('stroke-width', '1.5');
+      line.setAttribute('opacity', '0.4');
+      svg.appendChild(line);
+    });
+
+    blastCircle = document.createElementNS(ns,'circle');
+    blastCircle.setAttribute('cx', cx);
+    blastCircle.setAttribute('cy', cy);
+    blastCircle.setAttribute('r', LEGACY_RADIUS);
+    blastCircle.setAttribute('fill', COLORS.riskHigh);
+    blastCircle.setAttribute('opacity', '0.12');
+    blastCircle.setAttribute('class', 'blast-circle');
+    svg.appendChild(blastCircle);
+
+    var blastRing = document.createElementNS(ns,'circle');
+    blastRing.setAttribute('cx', cx);
+    blastRing.setAttribute('cy', cy);
+    blastRing.setAttribute('r', LEGACY_RADIUS);
+    blastRing.setAttribute('fill', 'none');
+    blastRing.setAttribute('stroke', COLORS.riskHigh);
+    blastRing.setAttribute('stroke-width', '1.5');
+    blastRing.setAttribute('opacity', '0.35');
+    blastRing.setAttribute('stroke-dasharray', '4 4');
+    blastRing.setAttribute('class', 'blast-circle');
+    svg.appendChild(blastRing);
+    window.__blastRing = blastRing;
+
+    positions.forEach(function(p){
+      var g = document.createElementNS(ns,'g');
+
+      var circle = document.createElementNS(ns,'circle');
+      circle.setAttribute('cx', p.x);
+      circle.setAttribute('cy', p.y);
+      circle.setAttribute('r', 30);
+      circle.setAttribute('fill', '#fff');
+      circle.setAttribute('stroke', COLORS.grayBlue);
+      circle.setAttribute('stroke-width', '1.2');
+      g.appendChild(circle);
+
+      var iconScale = 20 / 24;
+      var iconWrap = document.createElementNS(ns,'g');
+      iconWrap.setAttribute('transform', 'translate(' + (p.x - 12*iconScale) + ',' + (p.y - 12*iconScale) + ') scale(' + iconScale + ')');
+      iconWrap.setAttribute('fill', 'none');
+      iconWrap.setAttribute('stroke-width', '1.6');
+      iconWrap.setAttribute('stroke-linecap', 'round');
+      iconWrap.setAttribute('stroke-linejoin', 'round');
+      iconWrap.setAttribute('stroke', COLORS.navy);
+      iconWrap.innerHTML = ICONS[p.sys.icon];
+      g.appendChild(iconWrap);
+
+      var label = document.createElementNS(ns,'text');
+      label.setAttribute('x', p.x);
+      label.setAttribute('y', p.y + 48);
+      label.setAttribute('text-anchor','middle');
+      label.setAttribute('class','net-node-label');
+      label.textContent = p.sys.label;
+      g.appendChild(label);
+
+      svg.appendChild(g);
+    });
+
+    var centerCircle = document.createElementNS(ns,'circle');
+    centerCircle.setAttribute('cx', cx);
+    centerCircle.setAttribute('cy', cy);
+    centerCircle.setAttribute('r', 40);
+    centerCircle.setAttribute('fill', COLORS.navy);
+    svg.appendChild(centerCircle);
+
+    var iconScale2 = 22 / 24;
+    var centerIcon = document.createElementNS(ns,'g');
+    centerIcon.setAttribute('transform', 'translate(' + (cx - 11*iconScale2) + ',' + (cy - 15*iconScale2) + ') scale(' + iconScale2 + ')');
+    centerIcon.setAttribute('fill', 'none');
+    centerIcon.setAttribute('stroke-width', '1.8');
+    centerIcon.setAttribute('stroke-linecap', 'round');
+    centerIcon.setAttribute('stroke-linejoin', 'round');
+    centerIcon.setAttribute('stroke', '#fff');
+    centerIcon.innerHTML = ICONS.key;
+    svg.appendChild(centerIcon);
+
+    var centerText = document.createElementNS(ns,'text');
+    centerText.setAttribute('x', cx);
+    centerText.setAttribute('y', cy + 68);
+    centerText.setAttribute('text-anchor','middle');
+    centerText.setAttribute('class','net-center-label');
+    centerText.setAttribute('fill', COLORS.navy);
+    centerText.textContent = 'Compromised device';
+    svg.appendChild(centerText);
+  }
+
+  var toggle = document.getElementById('network-toggle');
+  var labelLegacy = document.getElementById('label-legacy');
+  var labelZtna = document.getElementById('label-ztna');
+  var reachCaption = document.getElementById('reach-caption');
+  var statReachable = document.getElementById('stat-reachable');
+  var statRadius = document.getElementById('stat-radius');
+  var statAccess = document.getElementById('stat-access');
+  var isZtna = false;
+
+  function applyState(on){
+    isZtna = on;
+    toggle.classList.toggle('on', on);
+    toggle.setAttribute('aria-checked', on ? 'true' : 'false');
+    labelLegacy.classList.toggle('active', !on);
+    labelZtna.classList.toggle('active', on);
+
+    var targetRadius = on ? ZTNA_RADIUS : LEGACY_RADIUS;
+    blastCircle.setAttribute('r', targetRadius);
+    if (window.__blastRing) window.__blastRing.setAttribute('r', targetRadius);
+
+    if (on){
+      blastCircle.setAttribute('fill', COLORS.teal);
+      window.__blastRing.setAttribute('stroke', COLORS.teal);
+      reachCaption.innerHTML = 'Reach from one compromised device: <strong>0 of 6 systems</strong>';
+      statReachable.textContent = '0 / 6';
+      statRadius.textContent = 'Single device';
+      statAccess.textContent = 'Per-session';
+    } else {
+      blastCircle.setAttribute('fill', COLORS.riskHigh);
+      window.__blastRing.setAttribute('stroke', COLORS.riskHigh);
+      reachCaption.innerHTML = 'Reach from one compromised device: <strong>all 6 systems</strong>';
+      statReachable.textContent = '6 / 6';
+      statRadius.textContent = 'Entire network';
+      statAccess.textContent = 'Always-on';
+    }
+  }
+
+  toggle.addEventListener('click', function(){
+    applyState(!isZtna);
+  });
+
+  buildDiagram();
+  applyState(false);
+
+  // ---------- Reveal on scroll ----------
+  var sections = document.querySelectorAll('.section');
+  if ('IntersectionObserver' in window){
+    var observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting){
+          entry.target.classList.add('in-view');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    sections.forEach(function(s){ observer.observe(s); });
+  } else {
+    sections.forEach(function(s){ s.classList.add('in-view'); });
+  }
+
+})();
+</script>
+
+</body>
+</html>

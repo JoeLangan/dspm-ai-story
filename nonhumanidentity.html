@@ -3,17 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Risk &amp; Coverage | Xalient</title>
-<meta name="description" content="Interactive briefing on data exfiltration channels and security capability coverage.">
+<title>Machine &amp; AI Identity Governance | Xalient</title>
+<meta name="description" content="Interactive briefing on machine and AI agent identity governance.">
 <link rel="stylesheet" href="shared.css">
 <style>
   .page-title{font-size:44px;font-weight:800;color:var(--navy);margin:0 0 14px;line-height:1.15;}
-  .page-sub{color:var(--gray-blue);font-size:15px;margin:0 0 28px;max-width:640px;}
+  .page-sub{color:var(--gray-blue);font-size:15px;margin:0 0 28px;max-width:680px;}
 
   .opening-callout{background:var(--bg-soft);border-left:4px solid var(--navy);padding:16px 20px;border-radius:8px;margin:0 0 8px;font-size:14.5px;color:var(--navy);line-height:1.5;max-width:720px;}
   .opening-callout strong{font-weight:800;}
 
-  /* Explore toggles */
+  /* Identity population swarm */
+  .swarm-wrap{margin:32px 0 8px;}
+  .swarm-grid{display:flex;flex-wrap:wrap;gap:5px;max-width:640px;}
+  .swarm-dot{width:11px;height:11px;border-radius:50%;flex:none;}
+  .swarm-dot.human{background:var(--navy);}
+  .swarm-dot.machine{background:var(--teal);}
+  .swarm-dot.agent{background:var(--pink);}
+  .swarm-legend{display:flex;flex-wrap:wrap;gap:22px;margin-top:16px;}
+  .swarm-legend-item{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--navy);}
+  .swarm-legend-dot{width:10px;height:10px;border-radius:50%;flex:none;}
+
   .explore-label{font-size:12px;font-weight:700;color:var(--gray-blue);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
   .toggle-group{display:flex;gap:12px;margin-bottom:22px;flex-wrap:wrap;}
   .cap-toggle{
@@ -37,10 +47,9 @@
   .hub-wrap svg{width:100%;max-width:640px;height:auto;}
   .hub-node-label{font-size:11px;fill:var(--navy);font-weight:600;}
   .hub-node-stat{font-size:8.5px;fill:var(--gray-blue);font-weight:600;}
-  .hub-center-label{font-size:13px;fill:#fff;font-weight:700;}
+  .hub-center-label{font-size:12px;fill:#fff;font-weight:700;}
   .hub-node-group{cursor:pointer;}
 
-  /* Channel focus panel */
   .focus-panel{border:1px solid var(--teal);border-radius:12px;background:var(--bg-soft);padding:24px 26px;margin:8px 0 32px;position:relative;}
   .focus-panel-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--gray-blue);font-size:20px;cursor:pointer;line-height:1;padding:4px;font-family:inherit;}
   .focus-panel-close:hover{color:var(--navy);}
@@ -54,10 +63,7 @@
   .focus-item-text{font-size:13px;color:var(--navy);line-height:1.55;}
   .focus-item-text strong{display:block;margin-bottom:3px;}
   .focus-none{color:var(--gray-blue);font-style:italic;font-size:13px;}
-  .focus-ai-link{display:inline-block;margin-top:14px;font-size:12.5px;font-weight:700;color:var(--teal);text-decoration:none;}
-  .focus-ai-link:hover{text-decoration:underline;}
 
-  /* Capability cards */
   .capability-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:40px 0 8px;}
   .cap-card{border:1px solid var(--border);border-radius:12px;padding:22px;background:var(--bg-soft);}
   .cap-card-label{font-size:16px;font-weight:800;color:var(--navy);margin-bottom:8px;}
@@ -71,19 +77,17 @@
   .cap-card-stat{margin-top:4px;padding-top:16px;border-top:1px solid var(--border);}
   .cap-card-stat-value{font-size:34px;font-weight:800;color:var(--navy);line-height:1;}
   .cap-card-stat-caption{font-size:12.5px;color:var(--navy);opacity:.85;margin-top:6px;line-height:1.5;}
-  .cap-card-stat-note{font-size:11.5px;color:var(--gray-blue);margin-top:6px;line-height:1.5;font-style:italic;}
   .cap-card-stat-source{font-size:11px;color:var(--gray-blue);margin-top:8px;}
 
   .cap-empty-prompt{grid-column:1/-1;color:var(--gray-blue);font-size:14px;font-style:italic;padding:36px;text-align:center;border:1px dashed var(--border);border-radius:12px;}
-
-  .closing-line{color:var(--gray-blue);font-size:14px;font-style:italic;margin:14px 0 0;}
 
   .recap-panel{border:1px solid var(--border);border-radius:12px;background:var(--bg-soft);padding:20px 24px;margin:28px 0 8px;}
   .recap-label{font-size:11px;font-weight:700;color:var(--gray-blue);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
   .recap-line{font-size:13.5px;color:var(--navy);line-height:1.6;margin-bottom:4px;}
   .recap-line:last-child{margin-bottom:0;}
-  .recap-line strong{color:var(--navy);}
   .recap-empty{color:var(--gray-blue);font-style:italic;font-size:14px;margin:0;}
+
+  .closing-line{color:var(--gray-blue);font-size:14px;font-style:italic;margin:14px 0 0;}
 
   @media (max-width:700px){
     .capability-cards{grid-template-columns:1fr;}
@@ -100,46 +104,55 @@
   <nav class="top-nav">
     <a href="index.html">Home</a>
     <a href="dspm.html">DSPM &amp; AI Data Risk</a>
-    <a href="exfiltration.html" class="current">Data Risk &amp; Coverage</a>
+    <a href="exfiltration.html">Data Risk &amp; Coverage</a>
     <a href="zero-trust-network.html">Secure Networking</a>
     <a href="zero-trust-maturity.html">Zero Trust Maturity</a>
-    <a href="non-human-identity.html">Machine Identity</a>
+    <a href="non-human-identity.html" class="current">Machine Identity</a>
   </nav>
 </header>
 
-<section class="section" id="channels">
-  <p class="eyebrow">Exfiltration Channels</p>
-  <h1 class="page-title">Where your data actually leaves</h1>
-  <p class="page-sub">Six channels account for the overwhelming majority of enterprise data exfiltration. Select a capability below, or click a channel directly, to see how each closes the gap.</p>
+<section class="section" id="nhi">
+  <p class="eyebrow">Non-Human Identity</p>
+  <h1 class="page-title">You have far more machine identities than people</h1>
+  <p class="page-sub">And almost none of them are governed the way your human accounts are. Select a capability below, or click an identity type directly, to see where the gap actually sits.</p>
 
-  <div class="opening-callout"><strong>No single point of failure.</strong> Attackers succeed just as often through credentials, phishing, cloud misconfiguration, vendor access, or endpoints — IBM's 2025 data alone spans $1.9M to $4.67M in breach cost depending on which channel is involved.</div>
-  <p class="stat-footnote">Source: IBM, <em>Cost of a Data Breach Report</em>, 2025.</p>
+  <div class="opening-callout"><strong>109 to 1.</strong> That's how many machine identities now exist for every human identity in the enterprise — up from 82 to 1 just a year ago. 79 of those 109 are AI agents.</div>
+  <p class="stat-footnote">Source: Palo Alto Networks, <em>2026 Identity Security Landscape Report</em>.</p>
 
-  <p class="explore-label" style="margin-top:28px;">Explore a capability</p>
-  <div class="toggle-group" id="capability-toggles">
-    <button class="cap-toggle" data-cap="DSPM" type="button">DSPM</button>
-    <button class="cap-toggle" data-cap="SSE" type="button">SSE</button>
-    <button class="cap-toggle" data-cap="Identity" type="button">Identity</button>
-    <button class="cap-toggle" data-cap="EDR" type="button">EDR</button>
+  <div class="swarm-wrap">
+    <div class="swarm-grid" id="swarm-grid"></div>
+    <div class="swarm-legend">
+      <div class="swarm-legend-item"><span class="swarm-legend-dot" style="background:var(--navy);"></span>1 human identity</div>
+      <div class="swarm-legend-item"><span class="swarm-legend-dot" style="background:var(--teal);"></span>30 other machine identities (service accounts, secrets, workloads)</div>
+      <div class="swarm-legend-item"><span class="swarm-legend-dot" style="background:var(--pink);"></span>79 AI agent identities</div>
+    </div>
   </div>
 
-  <p class="channel-counter" id="channel-counter">0 / 6 exfiltration channels addressed</p>
+  <p class="explore-label" style="margin-top:36px;">Explore a capability</p>
+  <div class="toggle-group" id="capability-toggles">
+    <button class="cap-toggle" data-cap="DSPM" type="button">DSPM</button>
+    <button class="cap-toggle" data-cap="Identity" type="button">Identity</button>
+    <button class="cap-toggle" data-cap="ITDR" type="button">ITDR</button>
+    <button class="cap-toggle" data-cap="IGA" type="button">IGA</button>
+  </div>
+
+  <p class="channel-counter" id="channel-counter">0 / 6 identity types governed</p>
 
   <div class="hub-wrap">
-    <svg id="hub-svg" viewBox="0 0 640 420" aria-label="Exfiltration channels diagram"></svg>
+    <svg id="hub-svg" viewBox="0 0 640 420" aria-label="Non-human identity diagram"></svg>
   </div>
 
   <div id="focus-panel-wrap"></div>
 
   <div class="capability-cards" id="capability-cards">
-    <p class="cap-empty-prompt" id="cap-empty-prompt">Select a capability above to see how it reduces exfiltration risk.</p>
+    <p class="cap-empty-prompt" id="cap-empty-prompt">Select a capability above to see how it governs machine and AI identity.</p>
   </div>
 
   <p class="stat-footnote">For reference: IBM's 2025 Cost of a Data Breach Report puts average breach costs in the $4.4M&ndash;$4.9M range depending on how the breach began — figures shown per capability above are independently measured, not additive.</p>
 
   <div class="recap-panel" id="closing-recap"></div>
 
-  <p class="closing-line">This maps the general pattern — the next step is walking it against what's actually running in your environment.</p>
+  <p class="closing-line">Humans are the identity type every enterprise already governs closely. This maps how far the rest still have to go.</p>
 </section>
 
 <footer>
@@ -152,68 +165,76 @@
 
   var COLORS = { navy:'#110F51', pink:'#FF0085', teal:'#00D5CB', grayBlue:'#879FAC' };
 
+  // ---------- Identity population swarm ----------
+  var swarmGrid = document.getElementById('swarm-grid');
+  var swarmHtml = '<span class="swarm-dot human"></span>';
+  for (var i = 0; i < 30; i++) swarmHtml += '<span class="swarm-dot machine"></span>';
+  for (var j = 0; j < 79; j++) swarmHtml += '<span class="swarm-dot agent"></span>';
+  swarmGrid.innerHTML = swarmHtml;
+
   var ICONS = {
+    user: '<circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/>',
     key: '<circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6"/><path d="M15.5 7.5l3 3L22 7l-3-3"/>',
-    mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/>',
-    cloud: '<path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/>',
     cpu: '<rect x="6" y="6" width="12" height="12" rx="1"/><rect x="10" y="10" width="4" height="4"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/>',
+    cloud: '<path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/>',
     briefcase: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>',
-    monitor: '<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>'
+    server: '<rect x="2" y="3" width="20" height="7" rx="1"/><rect x="2" y="14" width="20" height="7" rx="1"/><line x1="6" y1="6.5" x2="6.01" y2="6.5"/><line x1="6" y1="17.5" x2="6.01" y2="17.5"/>'
   };
 
-  var CHANNELS = [
-    { id:'credentials', label:'Credentials & identity', icon:'key' },
-    { id:'phishing', label:'Phishing & email', icon:'mail' },
-    { id:'cloud-saas', label:'Cloud & SaaS', icon:'cloud' },
-    { id:'ai-tools', label:'AI tools & agents', icon:'cpu', accent:'pink' },
-    { id:'third-party', label:'Third-party & vendor', icon:'briefcase' },
-    { id:'endpoint', label:'Endpoint & devices', icon:'monitor' }
+  var IDENTITIES = [
+    { id:'human-users', label:'Human users', icon:'user' },
+    { id:'service-accounts', label:'Service accounts', icon:'server' },
+    { id:'api-keys', label:'API keys & secrets', icon:'key' },
+    { id:'ai-agents', label:'AI agents', icon:'cpu', accent:'pink' },
+    { id:'workload-identities', label:'Workload identities', icon:'cloud' },
+    { id:'third-party', label:'Third-party integrations', icon:'briefcase' }
   ];
 
   // Coverage mapping: null = no coverage, 'partial', or 'primary'
   var COVERAGE = {
-    'credentials':  { DSPM:'partial', SSE:'partial', Identity:'primary', EDR:'partial' },
-    'phishing':     { DSPM:null,      SSE:'primary', Identity:null,      EDR:'partial' },
-    'cloud-saas':   { DSPM:'primary', SSE:'primary', Identity:null,      EDR:null },
-    'ai-tools':     { DSPM:'primary', SSE:'partial', Identity:null,      EDR:null },
-    'third-party':  { DSPM:'partial', SSE:null,      Identity:'primary', EDR:null },
-    'endpoint':     { DSPM:null,      SSE:null,      Identity:null,      EDR:'primary' }
+    'human-users':          { DSPM:'partial', Identity:'primary', ITDR:'primary', IGA:'primary' },
+    'service-accounts':     { DSPM:null,      Identity:'primary', ITDR:'partial', IGA:'primary' },
+    'api-keys':             { DSPM:null,      Identity:'primary', ITDR:'partial', IGA:'partial' },
+    'ai-agents':            { DSPM:'primary', Identity:'partial', ITDR:'partial', IGA:null },
+    'workload-identities':  { DSPM:null,      Identity:'primary', ITDR:'partial', IGA:'partial' },
+    'third-party':          { DSPM:'partial', Identity:'primary', ITDR:null,      IGA:'primary' }
   };
 
-  // Short supporting stat per channel (only where an independently published IBM figure exists)
   var CHANNEL_STATS = {
-    'credentials':  { short:'$4.67M avg. breach cost', full:'$4.67M average breach cost — IBM 2025' },
-    'phishing':     { short:'16% of breaches start here', full:'16% of breaches start here, the single most common entry point — IBM 2025' },
-    'third-party':  { short:'267 days avg. to detect', full:'267 days average time to detect, the longest of any category — IBM 2025' },
-    'ai-tools':     { short:'20% involve shadow AI', full:'20% of breaches now involve unsanctioned AI tools, adding $670K on average — IBM 2025' }
+    'ai-agents': { short:'79 of every 109 machines', full:'79 of every 109 machine identities are AI agents — Palo Alto Networks, 2026' }
   };
 
-  // Why each capability covers a given channel, surfaced when a node is clicked
   var CHANNEL_WHY = {
-    'credentials': {
-      DSPM: 'Classifies which credential stores and secrets are sensitive, so leaked or overshared access can be flagged before it’s exploited.',
-      SSE: 'Inspects traffic in real time, so a compromised login still can’t move a sensitive file out through an unsanctioned upload or webmail.',
-      Identity: 'Vaults privileged accounts and grants just-in-time access, so a stolen password rarely opens a standing door.',
-      EDR: 'Flags anomalous login and process behavior on the endpoint itself when a stolen credential is used to sign in.'
+    'human-users': {
+      DSPM: 'Classifies what sensitive data human users can reach, the same lens applied to every other identity type here.',
+      Identity: 'The identity type every enterprise already governs closely — MFA, lifecycle, and least-privilege are the baseline.',
+      ITDR: 'Decades of behavioral baselining exist for human accounts, making anomalies comparatively easy to spot.',
+      IGA: 'Certification campaigns and joiner-mover-leaver automation are mature and well-adopted for human accounts.'
     },
-    'phishing': {
-      SSE: 'Inline DLP blocks or quarantines sensitive files at the point of upload, email, or share — the moment a phished account tries to move data out.',
-      EDR: 'Detects the follow-on activity — credential dumping, unusual process chains — that typically follows a successful phishing click.'
+    'service-accounts': {
+      Identity: 'Vaulted and rotated the same way privileged human accounts are, instead of holding static standing credentials.',
+      ITDR: 'Behavioral baselining flags a service account suddenly doing something outside its normal pattern.',
+      IGA: 'Access certification and automated retirement catch the account nobody remembered to decommission.'
     },
-    'cloud-saas': {
-      DSPM: 'Scans cloud storage and SaaS apps agentlessly, flagging overshared or externally exposed sensitive data for remediation.',
-      SSE: 'Extends policy to unsanctioned SaaS and personal cloud storage apps, closing the channel DSPM’s classification feeds into.'
+    'api-keys': {
+      Identity: 'Secrets are vaulted and rotated automatically instead of hardcoded or left static indefinitely.',
+      ITDR: 'Flags anomalous use of a key — wrong location, wrong volume, wrong time — the same way a stolen password would be flagged.',
+      IGA: 'Ownership is assigned to every key, so someone is accountable when it is flagged as stale or overprivileged.'
     },
-    'ai-tools': {
-      DSPM: 'Specifically watches AI surfaces — flags sensitive data before it’s pasted into a public AI tool, and tracks what AI agents can access.',
-      SSE: 'Inline inspection extends to AI tool traffic, catching sensitive data in transit even where classification hasn’t been applied yet.'
+    'ai-agents': {
+      DSPM: 'Specifically watches AI surfaces — flags sensitive data before it is pasted into a public AI tool, and tracks what agents can access.',
+      Identity: 'Agent identity governance is emerging — scoped, short-lived credentials rather than standing agent access.',
+      ITDR: 'Flags an agent operating outside its expected scope or touching a data set it has no history with.'
+    },
+    'workload-identities': {
+      Identity: 'Cloud workloads and containers authenticate with short-lived, scoped credentials instead of standing keys.',
+      ITDR: 'Anomaly detection extends to workload-to-workload traffic, not just user-facing login events.',
+      IGA: 'Workload identity lifecycle is tied to the deployment that created it, reducing orphaned access after teardown.'
     },
     'third-party': {
-      DSPM: 'Classification travels with the data, so sensitivity is still known even when a vendor or third party has access to it.',
-      Identity: 'Vendor access is granted just-in-time and automatically revoked the moment an engagement ends, rather than left standing.'
-    },
-    'endpoint': {
-      EDR: 'Monitors endpoint behavior directly and isolates a compromised device from the network within seconds of detection.'
+      DSPM: 'Classification travels with the data, so sensitivity is still known even when a vendor or integration has access to it.',
+      Identity: 'Vendor and integration access is granted just-in-time and revoked automatically when the engagement ends.',
+      IGA: 'Certification campaigns extend to third-party accounts, not just internal ones, catching access that outlives the contract.'
     }
   };
 
@@ -221,61 +242,54 @@
     {
       id:'DSPM',
       label:'DSPM',
-      description:'Discovers and classifies sensitive data across cloud, SaaS, and AI pipelines.',
-      reduces:'Once data is classified, every other control can act on what’s actually sensitive instead of guessing. That’s what turns "this might be private" into a rule DLP and access policies can actually enforce.',
+      description:'Discovers and classifies what machine and AI identities can actually reach and touch.',
+      reduces:'Most non-human identity risk isn’t the identity itself — it’s the data it can quietly reach. Classifying that data shows which machine identities sit on your most sensitive systems, not just how many exist.',
       practice:[
-        { tag:null, text:'Agentless scanning across cloud storage, SaaS apps, and data warehouses — no agents to deploy' },
-        { tag:null, text:'Classifies by content and context, not just filenames, covering PII, financial data, source code, and regulated categories' },
-        { tag:null, text:'Flags overshared or externally exposed sensitive data for remediation' },
-        { tag:'AI-DSPM', text:'Specifically watches AI surfaces — flags sensitive data before it’s pasted into a public AI tool, and tracks what AI agents can access' }
+        { tag:'AI-DSPM', text:'Tracks exactly what data an AI agent has accessed, not just what it is authorized to access' },
+        { tag:null, text:'Flags service accounts and integrations with disproportionate access relative to their function' },
+        { tag:null, text:'Extends classification into cloud workloads and pipelines, not just user-facing apps' }
       ],
       stat:{ value:'$208K', caption:'lower average breach cost from encryption alone, one part of the broader data security fundamentals (discovery, classification, encryption) IBM recommends.', source:'IBM 2025 Cost of a Data Breach Report.' }
     },
     {
-      id:'SSE',
-      label:'SSE',
-      description:'Enforces zero trust access and inline data-loss prevention across web, cloud, and private app traffic.',
-      reduces:'Even if a phishing email succeeds and an account is compromised, SSE inspects the traffic itself in real time — so the sensitive file still can’t leave through an unsanctioned upload, personal cloud app, or webmail.',
-      practice:[
-        { tag:'SWG', text:'Inspects web traffic inline for every user regardless of location, blocking malicious sites and risky downloads before they reach the endpoint' },
-        { tag:'DLP', text:'Blocks or quarantines sensitive files at the point of upload, email, or share — not after the fact' },
-        { tag:'ZTNA', text:'Every access request is evaluated using identity, device posture, and risk signals in real time — not a one-time login that grants standing network access' },
-        { tag:'CASB', text:'Extends visibility and policy to unsanctioned SaaS and personal cloud storage apps' }
-      ],
-      stat:{ value:'$1.76M', caption:'lower average breach cost for organizations with zero trust architecture in place.', source:'IBM 2025 Cost of a Data Breach Report.' }
-    },
-    {
       id:'Identity',
       label:'Identity',
-      description:'Governs who and what can access sensitive systems, enforcing least-privilege and just-in-time access.',
-      reduces:'A stolen password or a compromised vendor login only matters if it opens a door. Removing standing access means that door stays shut except for the exact moment and scope it was actually needed.',
+      description:'Extends least-privilege and lifecycle governance to service accounts, API keys, and workload identities — not just people.',
+      reduces:'An unrotated API key or a service account with standing admin rights is exactly as dangerous as a stolen human password — except nobody is watching it, because nobody thought of it as an identity to govern in the first place.',
       practice:[
-        { tag:'PAM', text:'Privileged accounts are vaulted rather than held directly by admins — checked out per session, then rotated automatically, with every action logged' },
-        { tag:'PAM', text:'Just-in-time access replaces standing admin rights with time-bound grants tied to a specific task' },
-        { tag:'IGA', text:'Access certification campaigns catch standing entitlements that accumulated over time but are no longer needed' },
-        { tag:'IGA', text:'Joiner-mover-leaver automation keeps access aligned to role as people change jobs internally, not just when they leave' },
-        { tag:'ITDR', text:'Continuous identity threat detection flags anomalous access in real time, for human and machine identities alike' }
+        { tag:'PAM', text:'Secrets and service account credentials are vaulted and rotated automatically, not hardcoded or left static' },
+        { tag:'Workload Identity', text:'Cloud workloads and containers authenticate with short-lived, scoped credentials instead of standing keys' },
+        { tag:'JIT', text:'Third-party and vendor integrations get time-bound access tied to the engagement, not permanent standing keys' }
       ],
-      stat:{ value:'$4.67M', caption:'average cost of a credential-based breach — the cost this control is meant to prevent, not a measured savings figure.', note:'IBM’s top recommended lever for 2025 is fortifying identity and access management.', source:'IBM 2025 Cost of a Data Breach Report.' }
+      stat:{ value:'$4.67M', caption:'average cost of a credential-based breach — the cost this control is meant to prevent, not a measured savings figure.', source:'IBM 2025 Cost of a Data Breach Report.' }
     },
     {
-      id:'EDR',
-      label:'EDR',
-      description:'Detects and responds to malicious activity directly on endpoints and devices.',
-      reduces:'Exfiltration rarely happens at the moment of compromise — it happens hours or days later, while an attacker moves laterally or stages data to leave. EDR is what catches that window and isolates the device first.',
+      id:'ITDR',
+      label:'ITDR',
+      description:'Detects anomalous behavior from machine and AI identities in real time, the same way it does for human accounts.',
+      reduces:'A compromised service account or a jailbroken AI agent doesn’t log in and behave suspiciously the way a person might — it just starts doing what it’s authorized to do, faster and at a different time. ITDR is built to catch that shift in pattern, not just the credential.',
       practice:[
-        { tag:null, text:'Monitors every endpoint for behavior, not just known malware signatures — credential dumping, unusual process chains, mass file access' },
-        { tag:null, text:'Automatically isolates a compromised device from the network within seconds of detection' },
-        { tag:null, text:'Can roll back malicious changes without a full device rebuild' },
-        { tag:null, text:'Feeds detections into a broader pipeline so an endpoint alert can be correlated with identity or network activity' }
+        { tag:null, text:'Baselines normal behavior per machine identity, not one generic threshold applied to every account' },
+        { tag:null, text:'Flags AI agents operating outside their expected scope or data set' },
+        { tag:null, text:'Correlates machine identity anomalies with the same pipeline as human identity threats' }
       ],
       stat:{ value:'$1.9M', caption:'lower average breach cost for organizations using AI-driven security automation extensively.', source:'IBM 2025 Cost of a Data Breach Report.' }
+    },
+    {
+      id:'IGA',
+      label:'IGA',
+      description:'Governs the full lifecycle of every identity, human or machine, from creation to certification to retirement.',
+      reduces:'Machine identities rarely get decommissioned when the project that created them ends. IGA is what catches the orphaned service account still holding access two years after the system it supported was retired.',
+      practice:[
+        { tag:null, text:'Access certification campaigns extend to service accounts and API keys, not just human users' },
+        { tag:null, text:'Ownership is assigned to every machine identity, so someone is accountable when it is flagged' },
+        { tag:null, text:'Automated retirement ties machine identity lifecycle to the system or project that created it' }
+      ],
+      stat:{ value:'97%', caption:'of AI-related security breaches involved systems that lacked proper access controls in the first place — the gap access certification and lifecycle governance are built to close.', source:'IBM 2025 Cost of a Data Breach Report.' }
     }
   ];
-  var CAP_BY_ID = {};
-  CAPABILITIES.forEach(function(c){ CAP_BY_ID[c.id] = c; });
 
-  var activeCaps = {};   // capabilities being explored (pills)
+  var activeCaps = {};
   var focusedChannel = null;
 
   function bestLevel(channelId, capsObj){
@@ -293,9 +307,9 @@
   var hubSvg = document.getElementById('hub-svg');
   var cx = 320, cy = 200, r = 140;
   var angles = [-90,-30,30,90,150,210].map(function(d){ return d * Math.PI / 180; });
-  var nodePositions = CHANNELS.map(function(channel, i){
+  var nodePositions = IDENTITIES.map(function(identity, i){
     var a = angles[i];
-    return { channel:channel, x: cx + r*Math.cos(a), y: cy + r*Math.sin(a) };
+    return { identity:identity, x: cx + r*Math.cos(a), y: cy + r*Math.sin(a) };
   });
   var nodeRefs = {};
 
@@ -333,8 +347,8 @@
       circle.setAttribute('cy', p.y);
       circle.setAttribute('r', 30);
       circle.setAttribute('fill', '#fff');
-      circle.setAttribute('stroke', p.channel.accent === 'pink' ? COLORS.pink : COLORS.grayBlue);
-      circle.setAttribute('stroke-width', p.channel.accent === 'pink' ? '2.5' : '1.2');
+      circle.setAttribute('stroke', p.identity.accent === 'pink' ? COLORS.pink : COLORS.grayBlue);
+      circle.setAttribute('stroke-width', p.identity.accent === 'pink' ? '2.5' : '1.2');
       content.appendChild(circle);
 
       var iconScale = 20 / 24;
@@ -344,8 +358,8 @@
       iconWrap.setAttribute('stroke-width', '1.6');
       iconWrap.setAttribute('stroke-linecap', 'round');
       iconWrap.setAttribute('stroke-linejoin', 'round');
-      iconWrap.setAttribute('stroke', p.channel.accent === 'pink' ? COLORS.pink : COLORS.navy);
-      iconWrap.innerHTML = ICONS[p.channel.icon];
+      iconWrap.setAttribute('stroke', p.identity.accent === 'pink' ? COLORS.pink : COLORS.navy);
+      iconWrap.innerHTML = ICONS[p.identity.icon];
       content.appendChild(iconWrap);
 
       var label = document.createElementNS(ns,'text');
@@ -353,10 +367,10 @@
       label.setAttribute('y', p.y + 48);
       label.setAttribute('text-anchor','middle');
       label.setAttribute('class','hub-node-label');
-      label.textContent = p.channel.label;
+      label.textContent = p.identity.label;
       content.appendChild(label);
 
-      var stat = CHANNEL_STATS[p.channel.id];
+      var stat = CHANNEL_STATS[p.identity.id];
       if (stat){
         var statText = document.createElementNS(ns,'text');
         statText.setAttribute('x', p.x);
@@ -372,7 +386,6 @@
 
       outer.appendChild(content);
 
-      // coverage badge: teal circle (primary/partial) or gray dash (uncovered)
       var badgeCircle = document.createElementNS(ns,'circle');
       badgeCircle.setAttribute('cx', p.x + 22);
       badgeCircle.setAttribute('cy', p.y - 22);
@@ -395,13 +408,13 @@
       outer.appendChild(badgeDash);
 
       outer.addEventListener('click', function(){
-        focusedChannel = (focusedChannel === p.channel.id) ? null : p.channel.id;
+        focusedChannel = (focusedChannel === p.identity.id) ? null : p.identity.id;
         refreshDiagram();
         renderFocusPanel();
       });
 
       hubSvg.appendChild(outer);
-      nodeRefs[p.channel.id] = { highlight:highlight, badgeCircle:badgeCircle, badgeDash:badgeDash };
+      nodeRefs[p.identity.id] = { highlight:highlight, badgeCircle:badgeCircle, badgeDash:badgeDash };
     });
 
     var centerCircle = document.createElementNS(ns,'circle');
@@ -416,7 +429,7 @@
     centerText.setAttribute('y', cy - 4);
     centerText.setAttribute('text-anchor','middle');
     centerText.setAttribute('class','hub-center-label');
-    centerText.textContent = 'Your';
+    centerText.textContent = 'Your identity';
     hubSvg.appendChild(centerText);
 
     var centerText2 = document.createElementNS(ns,'text');
@@ -424,17 +437,17 @@
     centerText2.setAttribute('y', cy + 13);
     centerText2.setAttribute('text-anchor','middle');
     centerText2.setAttribute('class','hub-center-label');
-    centerText2.textContent = 'data';
+    centerText2.textContent = 'fabric';
     hubSvg.appendChild(centerText2);
   }
 
   function refreshDiagram(){
     var addressedCount = 0;
-    CHANNELS.forEach(function(channel){
-      var exploreLevel = bestLevel(channel.id, activeCaps);
-      var refs = nodeRefs[channel.id];
+    IDENTITIES.forEach(function(identity){
+      var exploreLevel = bestLevel(identity.id, activeCaps);
+      var refs = nodeRefs[identity.id];
 
-      refs.highlight.setAttribute('opacity', focusedChannel === channel.id ? '1' : '0');
+      refs.highlight.setAttribute('opacity', focusedChannel === identity.id ? '1' : '0');
 
       if (exploreLevel === 'primary'){
         refs.badgeCircle.setAttribute('fill', COLORS.teal);
@@ -451,10 +464,10 @@
         refs.badgeDash.setAttribute('opacity', '0.7');
       }
     });
-    document.getElementById('channel-counter').textContent = addressedCount + ' / 6 exfiltration channels addressed';
+    document.getElementById('channel-counter').textContent = addressedCount + ' / 6 identity types governed';
   }
 
-  // ---------- Channel focus panel ----------
+  // ---------- Focus panel ----------
   var focusWrap = document.getElementById('focus-panel-wrap');
 
   function renderFocusPanel(){
@@ -462,17 +475,17 @@
       focusWrap.innerHTML = '';
       return;
     }
-    var channel = CHANNELS.filter(function(c){ return c.id === focusedChannel; })[0];
-    var coverageForChannel = COVERAGE[channel.id];
-    var covering = CAPABILITIES.filter(function(c){ return coverageForChannel[c.id]; });
+    var identity = IDENTITIES.filter(function(c){ return c.id === focusedChannel; })[0];
+    var coverageForIdentity = COVERAGE[identity.id];
+    var covering = CAPABILITIES.filter(function(c){ return coverageForIdentity[c.id]; });
 
     var itemsHtml;
     if (covering.length === 0){
-      itemsHtml = '<p class="focus-none">No capability in this toolkit directly covers this channel today.</p>';
+      itemsHtml = '<p class="focus-none">No capability in this toolkit directly governs this identity type today.</p>';
     } else {
       itemsHtml = covering.map(function(cap){
-        var level = coverageForChannel[cap.id];
-        var why = (CHANNEL_WHY[channel.id] && CHANNEL_WHY[channel.id][cap.id]) || cap.reduces;
+        var level = coverageForIdentity[cap.id];
+        var why = (CHANNEL_WHY[identity.id] && CHANNEL_WHY[identity.id][cap.id]) || cap.reduces;
         return '<div class="focus-item">' +
           '<span class="focus-item-badge ' + level + '">' + (level === 'primary' ? 'Primary' : 'Partial') + '</span>' +
           '<div class="focus-item-text"><strong>' + cap.label + '</strong>' + why + '</div>' +
@@ -480,16 +493,11 @@
       }).join('');
     }
 
-    var aiLink = channel.id === 'ai-tools'
-      ? '<a class="focus-ai-link" href="dspm.html">See the full AI data risk story &rarr;</a>'
-      : '';
-
     focusWrap.innerHTML = '<div class="focus-panel">' +
       '<button class="focus-panel-close" type="button" aria-label="Close">&times;</button>' +
-      '<div class="focus-panel-title">' + channel.label + '</div>' +
-      '<div class="focus-panel-sub">What covers this channel, and why.</div>' +
+      '<div class="focus-panel-title">' + identity.label + '</div>' +
+      '<div class="focus-panel-sub">What governs this identity type, and why.</div>' +
       itemsHtml +
-      aiLink +
     '</div>';
 
     focusWrap.querySelector('.focus-panel-close').addEventListener('click', function(){
@@ -507,7 +515,7 @@
     var activeIds = CAPABILITIES.filter(function(c){ return activeCaps[c.id]; });
 
     if (activeIds.length === 0){
-      cardsContainer.innerHTML = '<p class="cap-empty-prompt" id="cap-empty-prompt">Select a capability above to see how it reduces exfiltration risk.</p>';
+      cardsContainer.innerHTML = '<p class="cap-empty-prompt" id="cap-empty-prompt">Select a capability above to see how it governs machine and AI identity.</p>';
       return;
     }
 
@@ -517,8 +525,6 @@
         return '<li class="cap-practice-item">' + tagHtml + item.text + '</li>';
       }).join('');
 
-      var noteHtml = cap.stat.note ? '<div class="cap-card-stat-note">' + cap.stat.note + '</div>' : '';
-
       return '<div class="cap-card">' +
         '<div class="cap-card-label">' + cap.label + '</div>' +
         '<div class="cap-card-desc">' + cap.description + '</div>' +
@@ -527,7 +533,6 @@
         '<div class="cap-card-stat">' +
           '<div class="cap-card-stat-value">' + cap.stat.value + '</div>' +
           '<div class="cap-card-stat-caption">' + cap.stat.caption + '</div>' +
-          noteHtml +
           '<div class="cap-card-stat-source">' + cap.stat.source + '</div>' +
         '</div>' +
       '</div>';
@@ -541,21 +546,21 @@
     var exploredCaps = CAPABILITIES.filter(function(c){ return activeCaps[c.id]; });
 
     if (exploredCaps.length === 0){
-      recapEl.innerHTML = '<p class="recap-empty">Nothing explored yet — select a capability above, or click a channel, to start mapping coverage.</p>';
+      recapEl.innerHTML = '<p class="recap-empty">Nothing explored yet — select a capability above, or click an identity type, to start mapping governance.</p>';
       return;
     }
 
-    var coveredChannels = CHANNELS.filter(function(ch){ return bestLevel(ch.id, activeCaps) !== null; });
-    var openChannels = CHANNELS.filter(function(ch){ return bestLevel(ch.id, activeCaps) === null; });
+    var governedTypes = IDENTITIES.filter(function(idn){ return bestLevel(idn.id, activeCaps) !== null; });
+    var openTypes = IDENTITIES.filter(function(idn){ return bestLevel(idn.id, activeCaps) === null; });
     var capNames = exploredCaps.map(function(c){ return c.label; }).join(', ');
-    var coveredNames = coveredChannels.map(function(ch){ return ch.label; }).join(', ');
+    var governedNames = governedTypes.map(function(idn){ return idn.label; }).join(', ');
 
     var html = '<div class="recap-label">Where this leaves things</div>' +
-      '<div class="recap-line">Explored: <strong>' + capNames + '</strong> — covering ' + coveredChannels.length + ' of 6 channels (' + coveredNames + ').</div>';
+      '<div class="recap-line">Explored: <strong>' + capNames + '</strong> — governing ' + governedTypes.length + ' of 6 identity types (' + governedNames + ').</div>';
 
-    if (openChannels.length > 0){
-      var openNames = openChannels.map(function(ch){ return ch.label; }).join(', ');
-      html += '<div class="recap-line">Still open: <strong>' + openNames + '</strong>.</div>';
+    if (openTypes.length > 0){
+      var openNames = openTypes.map(function(idn){ return idn.label; }).join(', ');
+      html += '<div class="recap-line">Still ungoverned: <strong>' + openNames + '</strong>.</div>';
     }
 
     recapEl.innerHTML = html;

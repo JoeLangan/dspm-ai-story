@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zero Trust Maturity Assessment | Xalient</title>
+<meta name="description" content="Interactive Zero Trust maturity self-assessment across the five CISA ZTMM pillars.">
+<link rel="stylesheet" href="shared.css">
+<style>
+  .page-title{font-size:44px;font-weight:800;color:var(--navy);margin:0 0 14px;line-height:1.15;}
+  .page-sub{color:var(--gray-blue);font-size:15px;margin:0 0 28px;max-width:680px;}
+
+  .opening-callout{background:var(--bg-soft);border-left:4px solid var(--navy);padding:16px 20px;border-radius:8px;margin:0 0 8px;font-size:14.5px;color:var(--navy);line-height:1.5;max-width:720px;}
+  .opening-callout strong{font-weight:800;}
+
+  .radar-wrap{width:100%;display:flex;justify-content:center;margin:32px 0 8px;}
+  .radar-wrap svg{width:100%;max-width:520px;height:auto;}
+  .radar-axis-label{font-size:12px;fill:var(--navy);font-weight:700;}
+  .radar-grid{fill:none;stroke:var(--border);stroke-width:1;}
+  .radar-shape{fill:var(--teal);fill-opacity:0.18;stroke:var(--teal);stroke-width:2.5;transition:d 0.4s ease;}
+  .radar-point{fill:var(--teal);}
+
+  .summary-panel{background:var(--bg-soft);border:1px solid var(--border);border-radius:12px;padding:22px 26px;margin:20px 0 36px;text-align:center;}
+  .summary-label{font-size:11px;font-weight:700;color:var(--gray-blue);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+  .summary-value{font-size:30px;font-weight:800;color:var(--navy);margin-bottom:8px;}
+  .summary-desc{font-size:13.5px;color:var(--navy);opacity:.85;max-width:520px;margin:0 auto 8px;line-height:1.5;}
+  .summary-focus{font-size:13px;color:var(--teal);font-weight:700;}
+
+  .pillar-row{border:1px solid var(--border);border-radius:12px;padding:18px 22px;margin-bottom:12px;background:#fff;}
+  .pillar-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;}
+  .pillar-name{font-size:15px;font-weight:800;color:var(--navy);}
+  .pillar-segments{display:flex;border:1px solid var(--border);border-radius:20px;overflow:hidden;}
+  .pillar-segment{
+    padding:7px 14px;
+    background:#fff;
+    color:var(--gray-blue);
+    font-size:12px;
+    font-weight:700;
+    border:none;
+    border-right:1px solid var(--border);
+    cursor:pointer;
+    font-family:inherit;
+    transition:background .2s ease, color .2s ease;
+  }
+  .pillar-segment:last-child{border-right:none;}
+  .pillar-segment:hover{background:var(--bg-soft);}
+  .pillar-segment.active{background:var(--teal);color:#fff;}
+  .pillar-desc{font-size:13px;color:var(--gray-blue);line-height:1.55;margin:0;}
+
+  .closing-line{color:var(--gray-blue);font-size:14px;font-style:italic;margin:24px 0 0;}
+
+  @media (max-width:600px){
+    .pillar-segments{flex-wrap:wrap;border-radius:10px;}
+    .pillar-segment{border-right:none;border-bottom:1px solid var(--border);flex:1 1 45%;}
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" class="brand">
+    <img src="Xalient%20Logo.png" alt="Xalient" class="logo">
+    <span class="brand-sub">Xalient Interactive Toolkit</span>
+  </a>
+  <nav class="top-nav">
+    <a href="index.html">Home</a>
+    <a href="dspm.html">DSPM &amp; AI Data Risk</a>
+    <a href="exfiltration.html">Data Risk &amp; Coverage</a>
+    <a href="zero-trust-network.html">Secure Networking</a>
+    <a href="zero-trust-maturity.html" class="current">Zero Trust Maturity</a>
+    <a href="non-human-identity.html">Machine Identity</a>
+  </nav>
+</header>
+
+<section class="section" id="maturity">
+  <p class="eyebrow">Zero Trust Maturity</p>
+  <h1 class="page-title">Where does this organization actually sit?</h1>
+  <p class="page-sub">CISA's Zero Trust Maturity Model breaks Zero Trust into five pillars, each progressing through four stages. Set where the customer sits on each, live in the conversation, and see the shape of their posture take form.</p>
+
+  <div class="opening-callout"><strong>Zero Trust isn't a product.</strong> It's a maturity curve — most organizations are further along in one or two pillars than the rest, and that imbalance is usually where the risk concentrates.</div>
+  <p class="stat-footnote">Framework: CISA, <em>Zero Trust Maturity Model 2.0</em>.</p>
+
+  <div class="radar-wrap">
+    <svg id="radar-svg" viewBox="0 0 640 400" aria-label="Zero Trust maturity radar chart"></svg>
+  </div>
+
+  <div class="summary-panel">
+    <div class="summary-label">Overall posture</div>
+    <div class="summary-value" id="summary-value">Traditional</div>
+    <div class="summary-desc" id="summary-desc">Zero Trust hasn't started yet — most controls are perimeter-based and trust is implicit once inside.</div>
+    <div class="summary-focus" id="summary-focus"></div>
+  </div>
+
+  <div id="pillar-rows"></div>
+
+  <p class="closing-line">This is a conversation starter, not a scored audit — the value is in seeing where the pillars are uneven, together.</p>
+</section>
+
+<footer>
+  Xalient · Interactive briefing toolkit — for use in customer conversations only
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  var COLORS = { navy:'#110F51', teal:'#00D5CB', grayBlue:'#879FAC' };
+  var STAGES = ['Traditional', 'Initial', 'Advanced', 'Optimal'];
+
+  var PILLARS = [
+    {
+      id:'identity', label:'Identity',
+      desc:[
+        'Passwords only; limited visibility into who is accessing what.',
+        'MFA introduced for some systems; identity managed largely by hand.',
+        'MFA enforced broadly; centralized identity with partial automated lifecycle management.',
+        'Continuous, risk-based authentication with just-in-time access for human and machine identities alike.'
+      ]
+    },
+    {
+      id:'devices', label:'Devices',
+      desc:[
+        'No consistent device inventory; unmanaged devices can connect freely.',
+        'Basic inventory exists; compliance is checked only at enrollment.',
+        'Real-time device compliance monitoring feeds into access decisions.',
+        'Continuous device risk assessment is built into every access decision.'
+      ]
+    },
+    {
+      id:'networks', label:'Networks',
+      desc:[
+        'Flat network; broad access is granted once a VPN connection is established.',
+        'Some segmentation exists; perimeter-based controls still dominate.',
+        'Micro-segmentation in key areas; encrypted traffic is inspected.',
+        'Every connection is individually authenticated and encrypted — no implicit trust from network location.'
+      ]
+    },
+    {
+      id:'apps', label:'Applications & Workloads',
+      desc:[
+        'Access is granted at the network layer, not the application.',
+        'Some application-level controls exist; provisioning is largely manual.',
+        'Application access is context-aware; workloads are monitored continuously.',
+        'Every application interaction is authorized in real time based on identity, device, and risk.'
+      ]
+    },
+    {
+      id:'data', label:'Data',
+      desc:[
+        'Data classification is manual or nonexistent; access is broad by default.',
+        'Some classification is in place; encryption is applied inconsistently.',
+        'Data is classified and encrypted; access is tied to sensitivity.',
+        'Data is continuously discovered, classified, and governed — policy follows it everywhere it goes.'
+      ]
+    }
+  ];
+
+  var values = {};
+  PILLARS.forEach(function(p){ values[p.id] = 0; });
+
+  // ---------- Radar chart ----------
+  var ns = 'http://www.w3.org/2000/svg';
+  var svg = document.getElementById('radar-svg');
+  var cx = 320, cy = 200, maxR = 130;
+  var angles = PILLARS.map(function(_, i){ return (-90 + i * (360 / PILLARS.length)) * Math.PI / 180; });
+  var ANCHORS = ['middle','start','start','end','end'];
+
+  function levelR(stage){
+    return 22 + stage * (maxR - 22) / 3;
+  }
+
+  function pointAt(angleIndex, stage){
+    var a = angles[angleIndex];
+    var r = levelR(stage);
+    return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+  }
+
+  var shapePath;
+
+  function buildRadar(){
+    for (var level = 0; level <= 3; level++){
+      var pts = angles.map(function(a){
+        var r = levelR(level);
+        return (cx + r*Math.cos(a)) + ',' + (cy + r*Math.sin(a));
+      }).join(' ');
+      var poly = document.createElementNS(ns,'polygon');
+      poly.setAttribute('points', pts);
+      poly.setAttribute('class', 'radar-grid');
+      svg.appendChild(poly);
+    }
+
+    angles.forEach(function(a){
+      var line = document.createElementNS(ns,'line');
+      line.setAttribute('x1', cx);
+      line.setAttribute('y1', cy);
+      line.setAttribute('x2', cx + maxR*Math.cos(a));
+      line.setAttribute('y2', cy + maxR*Math.sin(a));
+      line.setAttribute('class', 'radar-grid');
+      svg.appendChild(line);
+    });
+
+    shapePath = document.createElementNS(ns,'polygon');
+    shapePath.setAttribute('class', 'radar-shape');
+    svg.appendChild(shapePath);
+
+    PILLARS.forEach(function(p, i){
+      var labelR = maxR + 42;
+      var a = angles[i];
+      var lx = cx + labelR * Math.cos(a);
+      var ly = cy + labelR * Math.sin(a) + 4;
+      var text = document.createElementNS(ns,'text');
+      text.setAttribute('x', lx);
+      text.setAttribute('y', ly);
+      text.setAttribute('text-anchor', ANCHORS[i]);
+      text.setAttribute('class', 'radar-axis-label');
+      text.textContent = p.label;
+      svg.appendChild(text);
+    });
+  }
+
+  function refreshRadar(){
+    var pts = PILLARS.map(function(p, i){
+      var pt = pointAt(i, values[p.id]);
+      return pt.x + ',' + pt.y;
+    }).join(' ');
+    shapePath.setAttribute('points', pts);
+  }
+
+  // ---------- Pillar controls ----------
+  var pillarRowsEl = document.getElementById('pillar-rows');
+
+  function renderPillarRows(){
+    pillarRowsEl.innerHTML = PILLARS.map(function(p){
+      var segsHtml = STAGES.map(function(stage, i){
+        var activeClass = values[p.id] === i ? ' active' : '';
+        return '<button class="pillar-segment' + activeClass + '" data-pillar="' + p.id + '" data-stage="' + i + '" type="button">' + stage + '</button>';
+      }).join('');
+      return '<div class="pillar-row">' +
+        '<div class="pillar-head"><span class="pillar-name">' + p.label + '</span><div class="pillar-segments">' + segsHtml + '</div></div>' +
+        '<p class="pillar-desc">' + p.desc[values[p.id]] + '</p>' +
+      '</div>';
+    }).join('');
+
+    pillarRowsEl.querySelectorAll('.pillar-segment').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        values[btn.dataset.pillar] = parseInt(btn.dataset.stage, 10);
+        refreshRadar();
+        renderPillarRows();
+        refreshSummary();
+      });
+    });
+  }
+
+  // ---------- Summary ----------
+  var summaryValue = document.getElementById('summary-value');
+  var summaryDesc = document.getElementById('summary-desc');
+  var summaryFocus = document.getElementById('summary-focus');
+
+  var OVERALL_DESC = [
+    'Zero Trust hasn’t started yet — most controls are perimeter-based and trust is implicit once inside.',
+    'The building blocks exist, but enforcement is inconsistent and mostly manual.',
+    'Zero Trust principles are applied broadly, with automation covering most common scenarios.',
+    'Access decisions are continuous, automated, and based on real-time risk — the goal state CISA describes.'
+  ];
+
+  function refreshSummary(){
+    var total = 0;
+    PILLARS.forEach(function(p){ total += values[p.id]; });
+    var avg = total / PILLARS.length;
+    var overallIndex = avg < 0.75 ? 0 : avg < 1.75 ? 1 : avg < 2.75 ? 2 : 3;
+
+    summaryValue.textContent = STAGES[overallIndex];
+    summaryDesc.textContent = OVERALL_DESC[overallIndex];
+
+    var lowest = PILLARS.reduce(function(a, b){ return values[a.id] <= values[b.id] ? a : b; });
+    var allEqual = PILLARS.every(function(p){ return values[p.id] === values[PILLARS[0].id]; });
+    summaryFocus.textContent = allEqual
+      ? ''
+      : 'Furthest behind: ' + lowest.label + ' (' + STAGES[values[lowest.id]] + ') — usually the fastest place to find a win.';
+  }
+
+  buildRadar();
+  refreshRadar();
+  renderPillarRows();
+  refreshSummary();
+
+  // ---------- Reveal on scroll ----------
+  var sections = document.querySelectorAll('.section');
+  if ('IntersectionObserver' in window){
+    var observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting){
+          entry.target.classList.add('in-view');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    sections.forEach(function(s){ observer.observe(s); });
+  } else {
+    sections.forEach(function(s){ s.classList.add('in-view'); });
+  }
+
+})();
+</script>
+
+</body>
+</html>
