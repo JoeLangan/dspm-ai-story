@@ -4,89 +4,135 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Data Risk &amp; Coverage | Xalient</title>
-<meta name="description" content="Interactive briefing on data exfiltration channels and security capability coverage.">
+<meta name="description" content="How sensitive data leaves an organization, what it costs, and where each security control breaks the chain.">
 <link rel="stylesheet" href="shared.css">
 <style>
   .page-title{font-size:44px;font-weight:800;color:var(--navy);margin:0 0 14px;line-height:1.15;}
-  .page-sub{color:var(--gray-blue);font-size:15px;margin:0 0 28px;max-width:640px;}
+  .page-sub{color:var(--gray-blue);font-size:15px;margin:0 0 32px;max-width:640px;line-height:1.55;}
 
-  .opening-callout{background:var(--bg-soft);border-left:4px solid var(--navy);padding:16px 20px;border-radius:8px;margin:0 0 8px;font-size:14.5px;color:var(--navy);line-height:1.5;max-width:720px;}
-  .opening-callout strong{font-weight:800;}
+  .title-row{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap;}
+  .notes-switch{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--gray-blue);cursor:pointer;user-select:none;margin-top:10px;}
+  .notes-switch.on{color:var(--navy);}
+  .switch{width:44px;height:24px;border-radius:20px;background:#D9DEE3;border:none;position:relative;cursor:pointer;padding:0;flex:none;transition:background .25s;}
+  .switch .knob{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .25s;}
+  .switch.on{background:var(--navy);}
+  .switch.on .knob{transform:translateX(20px);}
+  .switch:focus-visible,.channel-tab:focus-visible,.lens-pill:focus-visible,.grid-row:focus-visible{outline:2px solid var(--teal);outline-offset:2px;}
 
-  /* Explore toggles */
-  .explore-label{font-size:12px;font-weight:700;color:var(--gray-blue);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
-  .toggle-group{display:flex;gap:12px;margin-bottom:22px;flex-wrap:wrap;}
-  .cap-toggle{
-    padding:10px 22px;
-    border-radius:24px;
-    border:1.5px solid var(--border);
-    background:#fff;
-    color:var(--navy);
-    font-size:13.5px;
-    font-weight:700;
-    cursor:pointer;
-    transition:background .2s ease, border-color .2s ease, color .2s ease;
-    font-family:inherit;
+  /* Channel tabs */
+  .channel-tabs{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:0 0 36px;}
+  .channel-tab{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:14px 14px 13px;border:1.5px solid var(--border);border-radius:10px;background:#fff;cursor:pointer;font-family:inherit;text-align:left;color:var(--navy);transition:border-color .2s, background .2s;}
+  .channel-tab svg{width:22px;height:22px;color:var(--gray-blue);}
+  .channel-tab span{font-size:13px;font-weight:700;line-height:1.25;}
+  .channel-tab:hover{border-color:var(--teal);}
+  .channel-tab.active{border-color:var(--navy);background:var(--navy);color:#fff;}
+  .channel-tab.active svg{color:var(--teal);}
+
+  /* Channel header + impact */
+  .channel-head{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:start;margin-bottom:44px;}
+  .channel-name{font-size:30px;font-weight:800;margin:0 0 10px;}
+  .channel-summary{font-size:15.5px;line-height:1.6;margin:0;color:var(--navy);opacity:.88;}
+  .channel-link{display:inline-block;margin-top:14px;font-size:13px;font-weight:700;color:var(--navy);text-decoration:underline;text-decoration-color:var(--teal);text-underline-offset:3px;}
+
+  .impact{border:1px solid var(--border);border-radius:12px;padding:22px 24px;background:var(--bg-soft);}
+  .impact-label{font-size:12.5px;font-weight:700;color:var(--gray-blue);margin-bottom:6px;}
+  .impact-value{font-size:40px;font-weight:800;line-height:1;color:var(--navy);}
+  .impact-value small{font-size:15px;font-weight:700;color:var(--pink);margin-left:6px;}
+  .impact-caption{font-size:13px;color:var(--navy);opacity:.8;margin:6px 0 16px;line-height:1.45;}
+  .bar{position:relative;height:12px;background:#E6EAEE;border-radius:6px;margin:0 0 30px;}
+  .bar-fill{position:absolute;left:0;top:0;bottom:0;background:var(--navy);border-radius:6px;transition:width .6s ease;}
+  .bar-extra{position:absolute;top:0;bottom:0;background:var(--pink);border-radius:0 6px 6px 0;transition:left .6s ease,width .6s ease;}
+  .bar-marker{position:absolute;top:-5px;bottom:-5px;width:2px;background:var(--pink);}
+  .bar-marker span{position:absolute;top:22px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:11px;font-weight:700;color:var(--gray-blue);}
+  .impact-facts{list-style:none;margin:0;padding:0;}
+  .impact-facts li{font-size:13px;line-height:1.5;padding:9px 0 9px 16px;border-top:1px solid var(--border);position:relative;}
+  .impact-facts li::before{content:"";position:absolute;left:0;top:16px;width:6px;height:6px;border-radius:50%;background:var(--pink);}
+
+  /* Lens */
+  .lens{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 6px;}
+  .lens-title{font-size:13px;font-weight:700;color:var(--navy);margin-right:6px;}
+  .lens-pill{padding:7px 16px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--gray-blue);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;}
+  .lens-pill.on{background:var(--teal);border-color:var(--teal);color:var(--navy);}
+  .lens-hint{font-size:12.5px;color:var(--gray-blue);margin:0 0 26px;}
+
+  /* Attack path */
+  .path{position:relative;}
+  .track{position:relative;height:28px;margin:0 96px 6px 0;}
+  .track-line{position:absolute;left:0;right:-96px;top:13px;height:2px;background:repeating-linear-gradient(90deg,var(--border) 0 8px,transparent 8px 14px);}
+  .track-exit{position:absolute;right:-96px;top:5px;font-size:12px;font-weight:700;color:var(--gray-blue);background:#fff;padding-left:6px;}
+  .packet{position:absolute;top:4px;left:0;width:20px;height:20px;margin-left:-10px;border-radius:50%;background:var(--pink);box-shadow:0 0 0 5px rgba(255,0,133,.15);transition:left 1.4s cubic-bezier(.5,0,.3,1), background .3s;}
+  .packet.stopped{background:var(--teal);box-shadow:0 0 0 5px rgba(0,213,203,.2);}
+
+  .steps{display:grid;gap:14px;}
+  .step{border:1px solid var(--border);border-radius:12px;padding:18px 18px 16px;background:#fff;display:flex;flex-direction:column;transition:border-color .3s, opacity .3s;}
+  .step-num{font-size:12px;font-weight:800;color:var(--gray-blue);margin-bottom:6px;}
+  .step-title{font-size:15px;font-weight:800;margin:0 0 6px;line-height:1.3;}
+  .step-desc{font-size:13px;line-height:1.5;opacity:.85;margin:0 0 14px;}
+  .step-controls{margin-top:auto;display:flex;flex-direction:column;gap:8px;}
+  .ctrl{font-size:12.5px;line-height:1.45;padding:8px 10px;border-radius:8px;border:1.5px solid var(--teal);}
+  .ctrl b{display:block;font-size:12px;margin-bottom:2px;}
+  .ctrl.primary{background:rgba(0,213,203,.14);}
+  .ctrl.partial{border-style:dashed;}
+  .ctrl.off{border-color:var(--border);color:var(--gray-blue);background:#fff;opacity:.55;}
+  .gap-note{font-size:12.5px;font-weight:700;color:var(--pink);padding:8px 10px;border:1.5px solid rgba(255,0,133,.35);border-radius:8px;background:rgba(255,0,133,.05);}
+  .step.breaks{border-color:var(--teal);box-shadow:0 0 0 1px var(--teal);}
+  .step.after{opacity:.45;}
+
+  .verdict{margin:22px 0 0;padding:16px 20px;border-radius:10px;font-size:15px;font-weight:700;line-height:1.45;}
+  .verdict.stopped{background:rgba(0,213,203,.12);color:var(--navy);}
+  .verdict.leaks{background:rgba(255,0,133,.08);color:var(--navy);border-left:4px solid var(--pink);}
+  .verdict span{display:block;font-weight:500;font-size:13.5px;opacity:.8;margin-top:4px;}
+
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--gray-blue);margin-top:14px;}
+  .legend i{display:inline-block;width:18px;height:11px;border-radius:3px;border:1.5px solid var(--teal);vertical-align:-1px;margin-right:6px;}
+  .legend i.primary{background:rgba(0,213,203,.3);}
+  .legend i.partial{border-style:dashed;}
+
+  /* Seller notes */
+  .seller{display:none;margin-top:34px;border-radius:12px;background:var(--navy);color:#fff;padding:24px 26px;}
+  body.notes .seller{display:block;}
+  .seller-title{font-size:13px;font-weight:800;color:var(--teal);margin:0 0 16px;}
+  .seller-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px 32px;}
+  .seller h4{margin:0 0 4px;font-size:12px;font-weight:700;color:#B9C6CE;}
+  .seller p{margin:0;font-size:13.5px;line-height:1.55;}
+  .seller .ask{font-size:15px;font-weight:700;}
+
+  /* Coverage grid */
+  .grid-intro{color:var(--gray-blue);font-size:15px;margin:10px 0 24px;max-width:640px;line-height:1.55;}
+  .cov-wrap{overflow-x:auto;}
+  .cov{width:100%;border-collapse:collapse;min-width:620px;}
+  .cov th{font-size:12.5px;font-weight:700;color:var(--gray-blue);text-align:center;padding:10px 8px;border-bottom:2px solid var(--navy);}
+  .cov th:first-child{text-align:left;}
+  .cov td{padding:12px 8px;border-bottom:1px solid var(--border);text-align:center;font-size:13px;}
+  .cov td:first-child{text-align:left;font-weight:700;font-size:14px;}
+  .grid-row{cursor:pointer;}
+  .grid-row:hover td{background:var(--bg-soft);}
+  .cell{display:inline-block;min-width:72px;padding:4px 10px;border-radius:14px;font-size:11.5px;font-weight:700;}
+  .cell.primary{background:var(--teal);color:var(--navy);}
+  .cell.partial{border:1.5px dashed var(--teal);color:var(--navy);}
+  .cell.none{color:#C3CDD3;}
+  .open-count{font-weight:800;color:var(--pink);}
+  .open-count.zero{color:var(--risk-low);}
+
+  .sources{margin-top:30px;}
+  .sources p{font-size:11px;color:var(--gray-blue);line-height:1.6;margin:0 0 4px;}
+
+  @media (max-width:980px){
+    .channel-tabs{grid-template-columns:repeat(3,1fr);}
+    .channel-head{grid-template-columns:1fr;gap:24px;}
   }
-  .cap-toggle:hover{border-color:var(--teal);}
-  .cap-toggle.active{background:var(--teal);border-color:var(--teal);color:#fff;}
-
-  .channel-counter{font-size:14px;font-weight:700;color:var(--navy);margin:0 0 8px;}
-
-  .hub-wrap{width:100%;display:flex;justify-content:center;margin:20px 0 8px;}
-  .hub-wrap svg{width:100%;max-width:640px;height:auto;}
-  .hub-node-label{font-size:11px;fill:var(--navy);font-weight:600;}
-  .hub-node-stat{font-size:8.5px;fill:var(--gray-blue);font-weight:600;}
-  .hub-center-label{font-size:13px;fill:#fff;font-weight:700;}
-  .hub-node-group{cursor:pointer;}
-
-  /* Channel focus panel */
-  .focus-panel{border:1px solid var(--teal);border-radius:12px;background:var(--bg-soft);padding:24px 26px;margin:8px 0 32px;position:relative;}
-  .focus-panel-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--gray-blue);font-size:20px;cursor:pointer;line-height:1;padding:4px;font-family:inherit;}
-  .focus-panel-close:hover{color:var(--navy);}
-  .focus-panel-title{font-size:17px;font-weight:800;color:var(--navy);margin-bottom:4px;padding-right:24px;}
-  .focus-panel-sub{font-size:12.5px;color:var(--gray-blue);margin-bottom:16px;}
-  .focus-item{display:flex;gap:12px;padding:12px 0;border-top:1px solid var(--border);}
-  .focus-item:first-of-type{border-top:none;padding-top:0;}
-  .focus-item-badge{flex:none;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;padding:3px 9px;border-radius:12px;height:fit-content;white-space:nowrap;margin-top:1px;}
-  .focus-item-badge.primary{background:var(--teal);color:#fff;}
-  .focus-item-badge.partial{background:none;border:1.5px solid var(--teal);color:var(--teal);}
-  .focus-item-text{font-size:13px;color:var(--navy);line-height:1.55;}
-  .focus-item-text strong{display:block;margin-bottom:3px;}
-  .focus-none{color:var(--gray-blue);font-style:italic;font-size:13px;}
-  .focus-ai-link{display:inline-block;margin-top:14px;font-size:12.5px;font-weight:700;color:var(--teal);text-decoration:none;}
-  .focus-ai-link:hover{text-decoration:underline;}
-
-  /* Capability cards */
-  .capability-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:40px 0 8px;}
-  .cap-card{border:1px solid var(--border);border-radius:12px;padding:22px;background:var(--bg-soft);}
-  .cap-card-label{font-size:16px;font-weight:800;color:var(--navy);margin-bottom:8px;}
-  .cap-card-desc{font-size:13.5px;color:var(--navy);opacity:.85;line-height:1.55;margin-bottom:14px;}
-  .cap-card-reduces{font-size:12.5px;color:var(--navy);line-height:1.6;margin-bottom:16px;}
-  .cap-card-section-label{color:var(--teal);display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:8px;}
-  .cap-practice-list{list-style:none;margin:0 0 16px;padding:0;display:flex;flex-direction:column;gap:9px;}
-  .cap-practice-item{font-size:12.5px;color:var(--navy);opacity:.9;line-height:1.55;}
-  .cap-tag{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.03em;color:var(--gray-blue);border:1px solid var(--border);border-radius:10px;padding:1px 7px;margin-right:7px;text-transform:uppercase;vertical-align:middle;white-space:nowrap;}
-
-  .cap-card-stat{margin-top:4px;padding-top:16px;border-top:1px solid var(--border);}
-  .cap-card-stat-value{font-size:34px;font-weight:800;color:var(--navy);line-height:1;}
-  .cap-card-stat-caption{font-size:12.5px;color:var(--navy);opacity:.85;margin-top:6px;line-height:1.5;}
-  .cap-card-stat-note{font-size:11.5px;color:var(--gray-blue);margin-top:6px;line-height:1.5;font-style:italic;}
-  .cap-card-stat-source{font-size:11px;color:var(--gray-blue);margin-top:8px;}
-
-  .cap-empty-prompt{grid-column:1/-1;color:var(--gray-blue);font-size:14px;font-style:italic;padding:36px;text-align:center;border:1px dashed var(--border);border-radius:12px;}
-
-  .closing-line{color:var(--gray-blue);font-size:14px;font-style:italic;margin:14px 0 0;}
-
-  .recap-panel{border:1px solid var(--border);border-radius:12px;background:var(--bg-soft);padding:20px 24px;margin:28px 0 8px;}
-  .recap-label{font-size:11px;font-weight:700;color:var(--gray-blue);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
-  .recap-line{font-size:13.5px;color:var(--navy);line-height:1.6;margin-bottom:4px;}
-  .recap-line:last-child{margin-bottom:0;}
-  .recap-line strong{color:var(--navy);}
-  .recap-empty{color:var(--gray-blue);font-style:italic;font-size:14px;margin:0;}
-
-  @media (max-width:700px){
-    .capability-cards{grid-template-columns:1fr;}
+  @media (max-width:760px){
+    .steps{grid-template-columns:1fr !important;}
+    .track{display:none;}
+    .seller-grid{grid-template-columns:1fr;}
+    .page-title{font-size:34px;}
+  }
+  @media (max-width:480px){
+    .channel-tabs{grid-template-columns:repeat(2,1fr);}
+    .section{padding:56px 20px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .packet,.bar-fill,.bar-extra{transition:none;}
   }
 </style>
 </head>
@@ -107,39 +153,87 @@
   </nav>
 </header>
 
-<section class="section" id="channels">
-  <p class="eyebrow">Exfiltration Channels</p>
-  <h1 class="page-title">Where your data actually leaves</h1>
-  <p class="page-sub">Six common routes by which sensitive data leaves an organization. Select a capability below, or click a channel directly, to see how each closes the gap.</p>
+<section class="section" id="paths">
+  <div class="title-row">
+    <div>
+      <p class="eyebrow">Data risk &amp; coverage</p>
+      <h1 class="page-title">How data actually leaves</h1>
+    </div>
+    <label class="notes-switch" id="notes-label">
+      <button class="switch" id="notes-switch" role="switch" aria-checked="false" aria-label="Show seller notes"><span class="knob"></span></button>
+      Seller notes
+    </label>
+  </div>
+  <p class="page-sub">Pick a route out. Each one is a chain of steps, and every step is a chance to stop it. Turn controls off to see where the chain stays open.</p>
 
-  <div class="opening-callout"><strong>No single point of failure.</strong> Breaches start through phishing, abused credentials, exposed cloud and SaaS data, AI tools, suppliers and endpoints. In IBM's 2026 study, phishing was the most common entry point for the fourth year running, and breaches that began with valid account abuse still averaged $5.07M.</div>
-  <p class="stat-footnote">Source: IBM &amp; Ponemon Institute, <em>Cost of a Data Breach Report</em>, 2026.</p>
+  <div class="channel-tabs" id="channel-tabs" role="tablist" aria-label="Exfiltration routes"></div>
 
-  <p class="explore-label" style="margin-top:28px;">Explore a capability</p>
-  <div class="toggle-group" id="capability-toggles">
-    <button class="cap-toggle" data-cap="DSPM" type="button">DSPM</button>
-    <button class="cap-toggle" data-cap="SSE" type="button">SSE</button>
-    <button class="cap-toggle" data-cap="Identity" type="button">Identity</button>
-    <button class="cap-toggle" data-cap="EDR" type="button">EDR</button>
+  <div class="channel-head">
+    <div>
+      <h2 class="channel-name" id="channel-name"></h2>
+      <p class="channel-summary" id="channel-summary"></p>
+      <div id="channel-extra"></div>
+    </div>
+    <div class="impact" aria-live="polite">
+      <div class="impact-label" id="impact-label"></div>
+      <div class="impact-value" id="impact-value"></div>
+      <div class="impact-caption" id="impact-caption"></div>
+      <div class="bar" aria-hidden="true">
+        <div class="bar-fill" id="bar-fill"></div>
+        <div class="bar-extra" id="bar-extra"></div>
+        <div class="bar-marker" id="bar-marker"><span>Global avg. $4.99M</span></div>
+      </div>
+      <ul class="impact-facts" id="impact-facts"></ul>
+    </div>
   </div>
 
-  <p class="channel-counter" id="channel-counter">0 / 6 exfiltration channels addressed</p>
+  <div class="lens" id="lens">
+    <span class="lens-title">Controls in place</span>
+  </div>
+  <p class="lens-hint">All four on shows the full picture. Switch one off and watch where the chain reopens.</p>
 
-  <div class="hub-wrap">
-    <svg id="hub-svg" viewBox="0 0 640 420" aria-label="Exfiltration channels diagram"></svg>
+  <div class="path">
+    <div class="track" aria-hidden="true">
+      <div class="track-line"></div>
+      <div class="packet" id="packet"></div>
+      <div class="track-exit">Data leaves</div>
+    </div>
+    <div class="steps" id="steps"></div>
   </div>
 
-  <div id="focus-panel-wrap"></div>
+  <div class="verdict" id="verdict" aria-live="polite"></div>
 
-  <div class="capability-cards" id="capability-cards">
-    <p class="cap-empty-prompt" id="cap-empty-prompt">Select a capability above to see how it reduces exfiltration risk.</p>
+  <div class="legend">
+    <span><i class="primary"></i>Breaks the chain at this step</span>
+    <span><i class="partial"></i>Helps, but doesn't stop it alone</span>
   </div>
 
-  <p class="stat-footnote">For reference: IBM's 2026 Cost of a Data Breach Report puts the global average breach at $4.99M, and $11.5M for US organizations. Figures shown per channel and capability are measured independently and are not additive.</p>
+  <div class="seller" id="seller">
+    <p class="seller-title">Seller notes: not for the customer's screen</p>
+    <div class="seller-grid">
+      <div><h4>Listen for</h4><p id="s-listen"></p></div>
+      <div><h4>Who owns this</h4><p id="s-owner"></p></div>
+      <div><h4>Ask</h4><p class="ask" id="s-ask"></p></div>
+      <div><h4>What we bring</h4><p id="s-portfolio"></p></div>
+    </div>
+  </div>
+</section>
 
-  <div class="recap-panel" id="closing-recap"></div>
+<section class="section" id="coverage">
+  <p class="eyebrow">The summary view</p>
+  <h2 style="font-size:30px;font-weight:800;">No single control covers every route</h2>
+  <p class="grid-intro">Each capability breaks some chains and only slows others. The right-hand column counts steps that nothing here stops outright. Click a row to walk that route.</p>
+  <div class="cov-wrap">
+    <table class="cov">
+      <thead><tr><th>Route</th><th>DSPM</th><th>SSE</th><th>Identity</th><th>EDR</th><th>Steps left open</th></tr></thead>
+      <tbody id="cov-body"></tbody>
+    </table>
+  </div>
 
-  <p class="closing-line">This maps the general pattern — the next step is walking it against what's actually running in your environment.</p>
+  <div class="sources">
+    <p>Sources: IBM &amp; Ponemon Institute, <em>Cost of a Data Breach Report</em> 2026 (602 organizations breached March 2025 to February 2026; figures are global averages; the US average is $11.5M). Each figure is measured independently; they are not additive.</p>
+    <p>Attack paths are simplified, typical patterns for discussion. The next step is walking them against what's actually running in your environment.</p>
+  </div>
 </section>
 
 <footer>
@@ -150,456 +244,408 @@
 (function(){
   "use strict";
 
-  var COLORS = { navy:'#110F51', pink:'#FF0085', teal:'#00D5CB', grayBlue:'#879FAC' };
+  var CAPS = ['DSPM','SSE','Identity','EDR'];
+  var CAP_LONG = {
+    DSPM:'DSPM (data security posture)',
+    SSE:'SSE (SWG, CASB, DLP, ZTNA)',
+    Identity:'Identity (IGA, PAM, ITDR)',
+    EDR:'EDR (endpoint detection & response)'
+  };
 
   var ICONS = {
-    key: '<circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6"/><path d="M15.5 7.5l3 3L22 7l-3-3"/>',
-    mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/>',
-    cloud: '<path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/>',
-    cpu: '<rect x="6" y="6" width="12" height="12" rx="1"/><rect x="10" y="10" width="4" height="4"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/>',
-    briefcase: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>',
-    monitor: '<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>'
+    mail:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/>',
+    key:'<circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6"/><path d="M15.5 7.5l3 3L22 7l-3-3"/>',
+    cloud:'<path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/>',
+    cpu:'<rect x="6" y="6" width="12" height="12" rx="1"/><rect x="10" y="10" width="4" height="4"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/>',
+    briefcase:'<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>',
+    monitor:'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>'
   };
+
+  // Impact figures: IBM & Ponemon, Cost of a Data Breach Report 2026 (global averages, $M)
+  var GLOBAL_AVG = 4.99;
+  var BAR_MAX = 6.2;
 
   var CHANNELS = [
-    { id:'credentials', label:'Credentials & identity', icon:'key' },
-    { id:'phishing', label:'Phishing & email', icon:'mail' },
-    { id:'cloud-saas', label:'Cloud & SaaS', icon:'cloud' },
-    { id:'ai-tools', label:'AI tools & agents', icon:'cpu', accent:'pink' },
-    { id:'third-party', label:'Third-party & vendor', icon:'briefcase' },
-    { id:'endpoint', label:'Endpoint & devices', icon:'monitor' }
+    {
+      id:'phishing', label:'Phishing & social engineering', icon:'mail',
+      summary:'A convincing message, call or text gets someone to hand over a login or approve a session. The attacker then works as that person, and everything they do looks like normal use.',
+      impact:{ mode:'cost', value:5.29, label:'Average breach cost when phishing is the way in', caption:'The most common entry point for the fourth year running, and the most expensive.' },
+      facts:[
+        '17% of breaches start here, including voice and SMS phishing.',
+        'One in four malicious breaches now involve AI, averaging $6.04M. AI makes lures faster to write and harder to spot.',
+        'Nearly two-thirds of breach cost is detection, escalation and lost business, not the fine.'
+      ],
+      steps:[
+        { t:'The lure lands', d:'An email, text or call points the user at a convincing login page or asks them to approve an MFA prompt.',
+          c:[ {cap:'SSE', lvl:'partial', how:'Blocks known-malicious links and sites inline, wherever the user is working.'} ] },
+        { t:'Session captured', d:'The attacker now holds a valid login or session token. To most systems, they are the user.',
+          c:[ {cap:'Identity', lvl:'primary', how:'ITDR flags the impossible-travel or new-device sign-in; phishing-resistant MFA stops token replay.'},
+              {cap:'SSE', lvl:'partial', how:'ZTNA re-checks device posture, so an unmanaged attacker device is refused.'} ] },
+        { t:'Looks for what\'s worth taking', d:'Using the user\'s access, they search mailboxes, shared drives and SaaS apps for anything valuable.',
+          c:[ {cap:'DSPM', lvl:'partial', how:'Over-shared sensitive files were already found and access trimmed, so there is far less to reach.'} ] },
+        { t:'Data goes out', d:'Files are uploaded to personal cloud storage, forwarded to webmail or synced to an outside app.',
+          c:[ {cap:'SSE', lvl:'primary', how:'Inline DLP recognises classified data and blocks the upload or forward at the moment it happens.'},
+              {cap:'DSPM', lvl:'partial', how:'Supplies the classification DLP relies on, so the block fires on what\'s actually sensitive.'} ] }
+      ],
+      seller:{
+        listen:'"We had a business email compromise." "Users keep getting MFA fatigue prompts." A recent M365 or Google Workspace migration.',
+        owner:'CISO, security operations, and whoever runs messaging and collaboration.',
+        ask:'When a user\'s session is stolen, what stops that session reaching your sensitive data?',
+        portfolio:'SSE: Zscaler, Palo Alto. ITDR and strong authentication: Entra, CyberArk. Classification: Cyera. Email security isn\'t in our portfolio, so position alongside the customer\'s existing gateway.'
+      }
+    },
+    {
+      id:'credentials', label:'Stolen & abused credentials', icon:'key',
+      summary:'No lure needed: the attacker already has a working password, bought from an infostealer log or reused from another breach. They log in rather than break in, often through an account with far more access than it needs.',
+      impact:{ mode:'cost', value:5.07, label:'Average breach cost when valid account abuse is the way in', caption:'Hard to spot, because every action is performed by a legitimate account.' },
+      facts:[
+        'Breaches that take more than 200 days to contain average $5.65M, against $4.32M for faster ones.',
+        'The average breach took 247 days to identify and contain, up from 241 the year before.',
+        'Standing admin rights turn one stolen password into access to everything that account can reach.'
+      ],
+      steps:[
+        { t:'A credential is obtained', d:'Harvested by an infostealer on a home laptop, reused from another breach, or bought on a forum.',
+          c:[ {cap:'EDR', lvl:'partial', how:'Catches infostealer malware on managed devices, but not on personal ones.'} ] },
+        { t:'They log in as a real user', d:'The login succeeds. Nothing is broken, so nothing alarms.',
+          c:[ {cap:'Identity', lvl:'primary', how:'ITDR spots the anomalous sign-in pattern and forces re-authentication or disables the account.'},
+              {cap:'SSE', lvl:'partial', how:'ZTNA checks device posture and grants per-app access, not the whole network.'} ] },
+        { t:'Standing privilege opens the doors', d:'The account holds admin rights or entitlements nobody removed after a role change.',
+          c:[ {cap:'Identity', lvl:'primary', how:'PAM vaults privileged accounts and grants just-in-time access; IGA reviews strip stale entitlements.'} ] },
+        { t:'Bulk data is pulled out', d:'Databases are queried, file shares copied, exports run, all under a legitimate account.',
+          c:[ {cap:'SSE', lvl:'partial', how:'DLP inspects the outbound transfer for classified content.'},
+              {cap:'DSPM', lvl:'partial', how:'Shows which sensitive stores the account could reach, so over-access is fixed beforehand.'} ] }
+      ],
+      seller:{
+        listen:'An audit finding on privileged access. "We have hundreds of service accounts." "Admins have standing rights."',
+        owner:'IAM lead and CISO; often audit or compliance as the trigger.',
+        ask:'If an admin\'s credentials were used tonight, how long before anyone noticed, and what could they reach?',
+        portfolio:'PAM: CyberArk, BeyondTrust. IGA: SailPoint, Saviynt. ITDR and access: Entra. ZTNA: Zscaler, Palo Alto.'
+      }
+    },
+    {
+      id:'cloud', label:'Cloud & SaaS exposure', icon:'cloud',
+      summary:'Nobody attacks anything. Sensitive data is copied somewhere new, shared too widely or left in a misconfigured store, and it is simply found. This happens outside the network, so perimeter controls never see it.',
+      impact:{ mode:'amp', value:0.201, label:'Added to the average breach by poor application visibility', caption:'Shadow IT, not knowing which applications hold data, was among the largest cost amplifiers IBM measured.' },
+      facts:[
+        '52% of breaches involved customer personal data, at $192 per record.',
+        'Intellectual property was the costliest data per record, at $196.',
+        'Exposure of this kind is usually discovered by someone else first.'
+      ],
+      steps:[
+        { t:'Data spreads', d:'A copy of customer data lands in a test bucket, a new SaaS app or a personal share. Nobody records it.',
+          c:[ {cap:'DSPM', lvl:'primary', how:'Agentless discovery finds the new copy and classifies what\'s in it.'},
+              {cap:'SSE', lvl:'partial', how:'CASB reveals which SaaS apps are in use, sanctioned or not.'} ] },
+        { t:'It\'s shared too widely', d:'A public link, an "anyone in the org" permission, or a storage bucket open to the internet.',
+          c:[ {cap:'DSPM', lvl:'primary', how:'Flags sensitive data with exposed or excessive access and drives remediation at the source.'},
+              {cap:'SSE', lvl:'partial', how:'CASB posture checks catch risky sharing settings in major SaaS platforms.'} ] },
+        { t:'Someone finds it', d:'A scanner, a former employee, a curious outsider. Access happens straight to the cloud service.',
+          c:[] },
+        { t:'It\'s downloaded', d:'The data leaves directly from the provider. Your network never sees the traffic.',
+          c:[] }
+      ],
+      seller:{
+        listen:'"We\'re moving everything to the cloud." "We honestly don\'t know where all our data is." A privacy or DPO-driven initiative.',
+        owner:'CISO, data protection or privacy officer, cloud platform team.',
+        ask:'If I asked where your customer data lives today, every copy, how long would it take you to answer?',
+        portfolio:'DSPM: Cyera. CASB and SaaS posture: Zscaler, Palo Alto. This is the clearest DSPM-led conversation of the six.'
+      }
+    },
+    {
+      id:'ai', label:'AI tools & agents', icon:'cpu',
+      summary:'Staff paste sensitive data into AI tools nobody approved, and sanctioned copilots and agents can read anything their permissions allow. AI doesn\'t create new exposure; it finds existing exposure in seconds.',
+      impact:{ mode:'cost', value:5.39, label:'Average cost of shadow AI incidents', caption:'Incidents involving unsanctioned AI more than doubled in a year.' },
+      facts:[
+        '43% of breached organizations had a shadow AI incident, up from 20%.',
+        '21% of those incidents led to a regulatory fine; 42% caused operational disruption.',
+        'Among organizations with AI-related incidents, 92% lacked proper AI access controls.'
+      ],
+      link:true,
+      steps:[
+        { t:'AI is switched on', d:'A copilot is rolled out with the user\'s existing permissions, or staff start using an unapproved AI tool.',
+          c:[ {cap:'SSE', lvl:'partial', how:'Discovers unsanctioned AI apps in use and can block or restrict them.'},
+              {cap:'DSPM', lvl:'partial', how:'Maps what sensitive data each AI tool or agent could reach before it goes live.'} ] },
+        { t:'Sensitive data goes into a prompt', d:'A contract, customer list or source file is pasted in, often with good intentions.',
+          c:[ {cap:'SSE', lvl:'primary', how:'Inline DLP inspects AI traffic and blocks sensitive content from leaving in a prompt.'} ] },
+        { t:'A copilot surfaces what it shouldn\'t', d:'Over-permissioned files, like salaries or board papers, appear in an answer to someone who shouldn\'t see them.',
+          c:[ {cap:'DSPM', lvl:'primary', how:'Finds over-shared sensitive data and fixes permissions, so the copilot can\'t reach it.'} ] },
+        { t:'An agent acts on its own', d:'An autonomous agent uses its own token to read, move or send data, with nobody reviewing each action.',
+          c:[ {cap:'Identity', lvl:'primary', how:'Agents are governed as their own identity class: scoped, time-bound credentials, owned and reviewed.'},
+              {cap:'DSPM', lvl:'partial', how:'Tracks which sensitive data agents actually touch.'} ] }
+      ],
+      seller:{
+        listen:'"We\'re rolling out Copilot." "We banned ChatGPT, but..." A new AI governance committee or policy.',
+        owner:'CISO, CIO, AI governance lead; legal and privacy close behind.',
+        ask:'Before Copilot went live, did anyone check what it would be able to read?',
+        portfolio:'Cyera for AI data exposure (and agent identities, via the Oasis acquisition). SSE AI app controls: Zscaler, Palo Alto. Machine identity: SailPoint, CyberArk.'
+      }
+    },
+    {
+      id:'third', label:'Suppliers & partners', icon:'briefcase',
+      summary:'Your data is only as safe as the weakest supplier with access to it. Attackers compromise an IT provider, a software vendor or a partner, then use that trusted access to reach you.',
+      impact:{ mode:'amp', value:0.227, label:'Added to the average breach by supply chain compromise', caption:'The largest cost amplifier IBM measured, and among the slowest to find.' },
+      facts:[
+        'Supply chain breaches took 258 days to identify and contain.',
+        'Several of the most damaging recent breaches, including major UK retailers, began at a supplier.',
+        'Vendor access is often granted for a project and never removed.'
+      ],
+      steps:[
+        { t:'A supplier is given access', d:'An outsourced helpdesk, a managed service or a software partner gets accounts and remote access.',
+          c:[ {cap:'Identity', lvl:'primary', how:'Vendor access is just-in-time, session-recorded and automatically revoked when the engagement ends.'},
+              {cap:'SSE', lvl:'partial', how:'ZTNA connects vendors to specific apps, never to the network.'} ] },
+        { t:'The supplier is compromised', d:'The attacker breaches the supplier. This happens entirely outside your environment.',
+          c:[] },
+        { t:'Trusted access is reused', d:'The attacker logs in through the supplier\'s standing connection. It looks like routine support work.',
+          c:[ {cap:'Identity', lvl:'primary', how:'No standing access to reuse; PAM session monitoring flags unusual activity.'},
+              {cap:'EDR', lvl:'partial', how:'Detects hands-on-keyboard behaviour on the systems they reach.'} ] },
+        { t:'Your data leaves via their route', d:'Data is taken from your systems, or from copies the supplier held.',
+          c:[ {cap:'DSPM', lvl:'partial', how:'You know exactly what was shared with whom, so impact is scoped in days rather than months.'},
+              {cap:'SSE', lvl:'partial', how:'DLP inspects what vendor sessions move out.'} ] }
+      ],
+      seller:{
+        listen:'A supplier breach in the news. "Our IT support is outsourced." A third-party risk questionnaire that\'s become a burden.',
+        owner:'CISO, procurement or third-party risk, IAM.',
+        ask:'How many vendors have standing access to your environment today, and when was that last reviewed?',
+        portfolio:'Vendor PAM: CyberArk, BeyondTrust. Governance: SailPoint, Saviynt. ZTNA: Zscaler, Palo Alto. Data scoping: Cyera.'
+      }
+    },
+    {
+      id:'endpoint', label:'Endpoints & devices', icon:'monitor',
+      summary:'Malware lands on a laptop or server and quietly collects credentials and data. Exfiltration rarely happens at the moment of compromise; it happens days later, once data has been gathered and staged.',
+      impact:{ mode:'cost', value:5.65, label:'Average cost when a breach takes over 200 days to contain', caption:'Against $4.32M for breaches contained faster. On endpoints, dwell time is the cost driver.' },
+      facts:[
+        'The average breach took 247 days to identify and contain, reversing five years of improvement.',
+        'Data is usually staged and compressed before it moves, a window defenders can use.',
+        'Ransomware groups routinely steal data before encrypting it.'
+      ],
+      steps:[
+        { t:'Malware arrives', d:'A malicious download, a poisoned update, a USB stick or an unpatched vulnerability.',
+          c:[ {cap:'SSE', lvl:'partial', how:'SWG blocks malicious downloads before they reach the device.'},
+              {cap:'EDR', lvl:'primary', how:'Detects and blocks the malicious behaviour on execution.'} ] },
+        { t:'A foothold is built', d:'Credentials are dumped from memory and the attacker moves to other machines.',
+          c:[ {cap:'EDR', lvl:'primary', how:'Spots credential dumping and lateral movement, and isolates the device.'},
+              {cap:'Identity', lvl:'partial', how:'ITDR flags the stolen credentials being reused elsewhere.'} ] },
+        { t:'Data is gathered and staged', d:'Files are collected from shares, compressed and encrypted, ready to move.',
+          c:[ {cap:'EDR', lvl:'partial', how:'Flags mass file access and archiving behaviour.'},
+              {cap:'DSPM', lvl:'partial', how:'Least-privilege access to sensitive stores limits how much can be gathered.'} ] },
+        { t:'Data is sent out', d:'Over an encrypted channel to attacker infrastructure or a legitimate cloud service.',
+          c:[ {cap:'SSE', lvl:'primary', how:'Inspects outbound traffic, blocks known command-and-control and stops classified data leaving.'} ] }
+      ],
+      seller:{
+        listen:'A ransomware scare at a peer. "Our EDR renewal is coming up." Growth in unmanaged or personal devices.',
+        owner:'Security operations and SOC; the CISO after an incident.',
+        ask:'When your EDR fires at 2am, what stops the data that\'s already been staged from leaving?',
+        portfolio:'We don\'t resell EDR, so don\'t compete with the customer\'s choice. Position SSE and identity as what limits the blast radius, and integrate with the EDR they run.'
+      }
+    }
   ];
 
-  // Coverage mapping: null = no coverage, 'partial', or 'primary'
-  var COVERAGE = {
-    'credentials':  { DSPM:'partial', SSE:'partial', Identity:'primary', EDR:'partial' },
-    'phishing':     { DSPM:null,      SSE:'primary', Identity:null,      EDR:'partial' },
-    'cloud-saas':   { DSPM:'primary', SSE:'primary', Identity:null,      EDR:null },
-    'ai-tools':     { DSPM:'primary', SSE:'partial', Identity:null,      EDR:null },
-    'third-party':  { DSPM:'partial', SSE:null,      Identity:'primary', EDR:null },
-    'endpoint':     { DSPM:null,      SSE:null,      Identity:null,      EDR:'primary' }
-  };
+  // ---------- State ----------
+  var current = CHANNELS[0];
+  var active = { DSPM:true, SSE:true, Identity:true, EDR:true };
 
-  // Short supporting stat per channel (only where an independently published IBM figure exists)
-  var CHANNEL_STATS = {
-    'credentials':  { short:'$5.07M avg. (valid account abuse)', full:'Breaches starting with valid account abuse averaged $5.07M — IBM 2026' },
-    'phishing':     { short:'17% of breaches, $5.29M avg.', full:'Phishing, including voice and SMS, was the most common and costliest initial vector: 17% of breaches, $5.29M average — IBM 2026' },
-    'cloud-saas':   { short:'+$201K from shadow IT', full:'Lack of visibility into applications in use added $201K to the average breach — IBM 2026' },
-    'third-party':  { short:'258 days to contain', full:'Supply chain compromise took 258 days to identify and contain and added $227K per breach, the largest amplifier measured — IBM 2026' },
-    'ai-tools':     { short:'43% saw shadow AI incidents', full:'43% of breached organizations had incidents involving unsanctioned AI, averaging $5.39M — IBM 2026' }
-  };
+  function svgIcon(name){
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICONS[name] + '</svg>';
+  }
+  function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+  function money(m){ return m < 1 ? '$' + Math.round(m*1000) + 'K' : '$' + m.toFixed(2) + 'M'; }
 
-  // Why each capability covers a given channel, surfaced when a node is clicked
-  var CHANNEL_WHY = {
-    'credentials': {
-      DSPM: 'Classifies which credential stores and secrets are sensitive, so leaked or overshared access can be flagged before it’s exploited.',
-      SSE: 'Inspects traffic in real time, so a compromised login still can’t move a sensitive file out through an unsanctioned upload or webmail.',
-      Identity: 'Vaults privileged accounts and grants just-in-time access, so a stolen password rarely opens a standing door.',
-      EDR: 'Flags anomalous login and process behavior on the endpoint itself when a stolen credential is used to sign in.'
-    },
-    'phishing': {
-      SSE: 'Inline DLP blocks or quarantines sensitive files at the point of upload, email, or share — the moment a phished account tries to move data out.',
-      EDR: 'Detects the follow-on activity — credential dumping, unusual process chains — that typically follows a successful phishing click.'
-    },
-    'cloud-saas': {
-      DSPM: 'Scans cloud storage and SaaS apps agentlessly, flagging overshared or externally exposed sensitive data for remediation.',
-      SSE: 'Extends policy to unsanctioned SaaS and personal cloud storage apps, closing the channel DSPM’s classification feeds into.'
-    },
-    'ai-tools': {
-      DSPM: 'Specifically watches AI surfaces — flags sensitive data before it’s pasted into a public AI tool, and tracks what AI agents can access.',
-      SSE: 'Inline inspection extends to AI tool traffic, catching sensitive data in transit even where classification hasn’t been applied yet.'
-    },
-    'third-party': {
-      DSPM: 'Classification travels with the data, so sensitivity is still known even when a vendor or third party has access to it.',
-      Identity: 'Vendor access is granted just-in-time and automatically revoked the moment an engagement ends, rather than left standing.'
-    },
-    'endpoint': {
-      EDR: 'Monitors endpoint behavior directly and isolates a compromised device from the network within seconds of detection.'
-    }
-  };
+  // ---------- Tabs ----------
+  var tabsEl = document.getElementById('channel-tabs');
+  CHANNELS.forEach(function(ch){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'channel-tab';
+    b.setAttribute('role','tab');
+    b.dataset.id = ch.id;
+    b.innerHTML = svgIcon(ch.icon) + '<span>' + esc(ch.label) + '</span>';
+    b.addEventListener('click', function(){ select(ch.id); });
+    tabsEl.appendChild(b);
+  });
 
-  var CAPABILITIES = [
-    {
-      id:'DSPM',
-      label:'DSPM',
-      description:'Discovers and classifies sensitive data across cloud, SaaS, and AI pipelines.',
-      reduces:'Once data is classified, every other control can act on what’s actually sensitive instead of guessing. That’s what turns "this might be private" into a rule DLP and access policies can actually enforce.',
-      practice:[
-        { tag:null, text:'Agentless scanning across cloud storage, SaaS apps, and data warehouses — no agents to deploy' },
-        { tag:null, text:'Classifies by content and context, not just filenames, covering PII, financial data, source code, and regulated categories' },
-        { tag:null, text:'Flags overshared or externally exposed sensitive data for remediation' },
-        { tag:'AI-DSPM', text:'Specifically watches AI surfaces — flags sensitive data before it’s pasted into a public AI tool, and tracks what AI agents can access' }
-      ],
-      stat:{ value:'52%', caption:'of breaches involved customer personal data, at $192 per record: the data DSPM exists to find and classify before someone else does.', source:'IBM & Ponemon Institute, Cost of a Data Breach Report 2026.' }
-    },
-    {
-      id:'SSE',
-      label:'SSE',
-      description:'Enforces zero trust access and inline data-loss prevention across web, cloud, and private app traffic.',
-      reduces:'Even if a phishing email succeeds and an account is compromised, SSE inspects the traffic itself in real time — so the sensitive file still can’t leave through an unsanctioned upload, personal cloud app, or webmail.',
-      practice:[
-        { tag:'SWG', text:'Inspects web traffic inline for every user regardless of location, blocking malicious sites and risky downloads before they reach the endpoint' },
-        { tag:'DLP', text:'Blocks or quarantines sensitive files at the point of upload, email, or share — not after the fact' },
-        { tag:'ZTNA', text:'Every access request is evaluated using identity, device posture, and risk signals in real time — not a one-time login that grants standing network access' },
-        { tag:'CASB', text:'Extends visibility and policy to unsanctioned SaaS and personal cloud storage apps' }
-      ],
-      stat:{ value:'+$201K', caption:'added to the average breach when an organization lacks visibility into which applications are in use: the shadow IT gap that CASB and SWG close.', source:'IBM & Ponemon Institute, Cost of a Data Breach Report 2026.' }
-    },
-    {
-      id:'Identity',
-      label:'Identity',
-      description:'Governs who and what can access sensitive systems, enforcing least-privilege and just-in-time access.',
-      reduces:'A stolen password or a compromised vendor login only matters if it opens a door. Removing standing access means that door stays shut except for the exact moment and scope it was actually needed.',
-      practice:[
-        { tag:'PAM', text:'Privileged accounts are vaulted rather than held directly by admins — checked out per session, then rotated automatically, with every action logged' },
-        { tag:'PAM', text:'Just-in-time access replaces standing admin rights with time-bound grants tied to a specific task' },
-        { tag:'IGA', text:'Access certification campaigns catch standing entitlements that accumulated over time but are no longer needed' },
-        { tag:'IGA', text:'Joiner-mover-leaver automation keeps access aligned to role as people change jobs internally, not just when they leave' },
-        { tag:'ITDR', text:'Continuous identity threat detection flags anomalous access in real time, for human and machine identities alike' }
-      ],
-      stat:{ value:'$5.07M', caption:'average cost of a breach that began with valid account abuse: the cost this control is meant to prevent, not a measured savings figure.', note:'Among organizations with AI-related incidents, 92% lacked proper AI access controls.', source:'IBM & Ponemon Institute, Cost of a Data Breach Report 2026.' }
-    },
-    {
-      id:'EDR',
-      label:'EDR',
-      description:'Detects and responds to malicious activity directly on endpoints and devices.',
-      reduces:'Exfiltration rarely happens at the moment of compromise — it happens hours or days later, while an attacker moves laterally or stages data to leave. EDR is what catches that window and isolates the device first.',
-      practice:[
-        { tag:null, text:'Monitors every endpoint for behavior, not just known malware signatures — credential dumping, unusual process chains, mass file access' },
-        { tag:null, text:'Automatically isolates a compromised device from the network within seconds of detection' },
-        { tag:null, text:'Can roll back malicious changes without a full device rebuild' },
-        { tag:null, text:'Feeds detections into a broader pipeline so an endpoint alert can be correlated with identity or network activity' }
-      ],
-      stat:{ value:'−$1.93M', caption:'lower average breach cost for organizations using security AI and automation extensively, a category that includes, but is broader than, EDR.', source:'IBM & Ponemon Institute, Cost of a Data Breach Report 2026.' }
-    }
-  ];
-  var CAP_BY_ID = {};
-  CAPABILITIES.forEach(function(c){ CAP_BY_ID[c.id] = c; });
-
-  var activeCaps = {};   // capabilities being explored (pills)
-  var focusedChannel = null;
-
-  function bestLevel(channelId, capsObj){
-    var best = null;
-    Object.keys(capsObj).forEach(function(capId){
-      var level = COVERAGE[channelId][capId];
-      if (level === 'primary') best = 'primary';
-      else if (level === 'partial' && best !== 'primary') best = 'partial';
+  // ---------- Lens ----------
+  var lensEl = document.getElementById('lens');
+  CAPS.forEach(function(cap){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'lens-pill on';
+    b.textContent = cap;
+    b.title = CAP_LONG[cap];
+    b.setAttribute('aria-pressed','true');
+    b.addEventListener('click', function(){
+      active[cap] = !active[cap];
+      b.classList.toggle('on', active[cap]);
+      b.setAttribute('aria-pressed', active[cap] ? 'true' : 'false');
+      renderPath(false);
     });
+    lensEl.appendChild(b);
+  });
+
+  // ---------- Seller notes ----------
+  var notesSwitch = document.getElementById('notes-switch');
+  var notesLabel = document.getElementById('notes-label');
+  notesLabel.addEventListener('click', function(e){
+    e.preventDefault();
+    var on = !document.body.classList.contains('notes');
+    document.body.classList.toggle('notes', on);
+    notesSwitch.classList.toggle('on', on);
+    notesLabel.classList.toggle('on', on);
+    notesSwitch.setAttribute('aria-checked', on ? 'true' : 'false');
+  });
+
+  // ---------- Render ----------
+  function select(id){
+    current = CHANNELS.filter(function(c){ return c.id === id; })[0];
+    Array.prototype.forEach.call(tabsEl.children, function(t){
+      var on = t.dataset.id === id;
+      t.classList.toggle('active', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    renderHead();
+    renderSeller();
+    renderPath(true);
+  }
+
+  function renderHead(){
+    var ch = current, imp = ch.impact;
+    document.getElementById('channel-name').textContent = ch.label;
+    document.getElementById('channel-summary').textContent = ch.summary;
+    document.getElementById('channel-extra').innerHTML = ch.link
+      ? '<a class="channel-link" href="dspm.html">See the full AI data risk story</a>' : '';
+
+    document.getElementById('impact-label').textContent = imp.label;
+    var fill = document.getElementById('bar-fill');
+    var extra = document.getElementById('bar-extra');
+    var marker = document.getElementById('bar-marker');
+    marker.style.left = (GLOBAL_AVG / BAR_MAX * 100) + '%';
+
+    if (imp.mode === 'amp'){
+      document.getElementById('impact-value').innerHTML = '+' + money(imp.value) + '<small>on top of $4.99M</small>';
+      fill.style.width = (GLOBAL_AVG / BAR_MAX * 100) + '%';
+      fill.style.borderRadius = '6px 0 0 6px';
+      extra.style.left = (GLOBAL_AVG / BAR_MAX * 100) + '%';
+      extra.style.width = Math.max(1.5, imp.value / BAR_MAX * 100) + '%';
+    } else {
+      var diff = imp.value - GLOBAL_AVG;
+      document.getElementById('impact-value').innerHTML = money(imp.value) +
+        (diff > 0 ? '<small>+' + money(diff) + ' vs. average</small>' : '');
+      fill.style.width = (imp.value / BAR_MAX * 100) + '%';
+      fill.style.borderRadius = '6px';
+      extra.style.width = '0';
+    }
+    document.getElementById('impact-caption').textContent = imp.caption;
+    document.getElementById('impact-facts').innerHTML = ch.facts.map(function(f){ return '<li>' + esc(f) + '</li>'; }).join('');
+  }
+
+  function renderSeller(){
+    var s = current.seller;
+    document.getElementById('s-listen').textContent = s.listen;
+    document.getElementById('s-owner').textContent = s.owner;
+    document.getElementById('s-ask').textContent = s.ask;
+    document.getElementById('s-portfolio').textContent = s.portfolio;
+  }
+
+  var packet = document.getElementById('packet');
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var packetTimer = null;
+
+  function breakIndex(ch){
+    for (var i = 0; i < ch.steps.length; i++){
+      if (ch.steps[i].c.some(function(c){ return active[c.cap] && c.lvl === 'primary'; })) return i;
+    }
+    return -1;
+  }
+
+  function renderPath(fromStart){
+    var ch = current;
+    var n = ch.steps.length;
+    var stop = breakIndex(ch);
+    var stepsEl = document.getElementById('steps');
+    stepsEl.style.gridTemplateColumns = 'repeat(' + n + ',1fr)';
+
+    stepsEl.innerHTML = ch.steps.map(function(s, i){
+      var ctrls = s.c.map(function(c){
+        var on = active[c.cap];
+        return '<div class="ctrl ' + (on ? c.lvl : 'off') + '"><b>' + c.cap + (on ? '' : ' (off)') + '</b>' + esc(c.how) + '</div>';
+      }).join('');
+      var anyOn = s.c.some(function(c){ return active[c.cap]; });
+      if (!anyOn){
+        ctrls += '<div class="gap-note">' + (s.c.length ? 'Open: nothing switched on acts here' : 'Open: happens outside your controls') + '</div>';
+      }
+      var cls = 'step' + (i === stop ? ' breaks' : '') + (stop > -1 && i > stop ? ' after' : '');
+      return '<div class="' + cls + '"><div class="step-num">Step ' + (i+1) + '</div>' +
+        '<h3 class="step-title">' + esc(s.t) + '</h3><p class="step-desc">' + esc(s.d) + '</p>' +
+        '<div class="step-controls">' + ctrls + '</div></div>';
+    }).join('');
+
+    // Packet travels to the step that breaks the chain, or all the way out
+    var target = stop > -1 ? ((stop + 0.5) / n * 100) : 100;
+    clearTimeout(packetTimer);
+    packet.classList.remove('stopped');
+    if (fromStart && !reduceMotion){
+      packet.style.transition = 'none';
+      packet.style.left = '0%';
+      void packet.offsetWidth;
+      packet.style.transition = '';
+    }
+    requestAnimationFrame(function(){
+      packet.style.left = target + '%';
+      packetTimer = setTimeout(function(){ packet.classList.toggle('stopped', stop > -1); }, reduceMotion ? 0 : 900);
+    });
+
+    var v = document.getElementById('verdict');
+    var onNames = CAPS.filter(function(c){ return active[c]; });
+    if (stop > -1){
+      var who = ch.steps[stop].c.filter(function(c){ return active[c.cap] && c.lvl === 'primary'; }).map(function(c){ return c.cap; }).join(' and ');
+      v.className = 'verdict stopped';
+      v.innerHTML = 'Chain broken at step ' + (stop+1) + ' by ' + who + '.' +
+        '<span>Every later step is a backstop if that control is bypassed or misconfigured.</span>';
+    } else {
+      v.className = 'verdict leaks';
+      v.innerHTML = 'Nothing breaks this chain, so the data leaves.' +
+        '<span>' + (onNames.length ? 'With only ' + onNames.join(', ') + ' in place, every step can still succeed.' : 'No controls switched on.') + '</span>';
+    }
+  }
+
+  // ---------- Coverage grid ----------
+  function bestLevel(ch, cap){
+    var best = null;
+    ch.steps.forEach(function(s){ s.c.forEach(function(c){
+      if (c.cap !== cap) return;
+      if (c.lvl === 'primary') best = 'primary';
+      else if (!best) best = 'partial';
+    }); });
     return best;
   }
-
-  // ---------- Hub diagram ----------
-  var ns = 'http://www.w3.org/2000/svg';
-  var hubSvg = document.getElementById('hub-svg');
-  var cx = 320, cy = 200, r = 140;
-  var angles = [-90,-30,30,90,150,210].map(function(d){ return d * Math.PI / 180; });
-  var nodePositions = CHANNELS.map(function(channel, i){
-    var a = angles[i];
-    return { channel:channel, x: cx + r*Math.cos(a), y: cy + r*Math.sin(a) };
-  });
-  var nodeRefs = {};
-
-  function buildHub(){
-    nodePositions.forEach(function(p){
-      var line = document.createElementNS(ns,'line');
-      line.setAttribute('x1', cx);
-      line.setAttribute('y1', cy);
-      line.setAttribute('x2', p.x);
-      line.setAttribute('y2', p.y);
-      line.setAttribute('stroke', COLORS.grayBlue);
-      line.setAttribute('stroke-width', '1.5');
-      line.setAttribute('opacity', '0.45');
-      hubSvg.appendChild(line);
-    });
-
-    nodePositions.forEach(function(p){
-      var outer = document.createElementNS(ns,'g');
-      outer.setAttribute('class', 'hub-node-group');
-
-      var highlight = document.createElementNS(ns,'circle');
-      highlight.setAttribute('cx', p.x);
-      highlight.setAttribute('cy', p.y);
-      highlight.setAttribute('r', 36);
-      highlight.setAttribute('fill', 'none');
-      highlight.setAttribute('stroke', COLORS.navy);
-      highlight.setAttribute('stroke-width', '2');
-      highlight.setAttribute('opacity', '0');
-      outer.appendChild(highlight);
-
-      var content = document.createElementNS(ns,'g');
-
-      var circle = document.createElementNS(ns,'circle');
-      circle.setAttribute('cx', p.x);
-      circle.setAttribute('cy', p.y);
-      circle.setAttribute('r', 30);
-      circle.setAttribute('fill', '#fff');
-      circle.setAttribute('stroke', p.channel.accent === 'pink' ? COLORS.pink : COLORS.grayBlue);
-      circle.setAttribute('stroke-width', p.channel.accent === 'pink' ? '2.5' : '1.2');
-      content.appendChild(circle);
-
-      var iconScale = 20 / 24;
-      var iconWrap = document.createElementNS(ns,'g');
-      iconWrap.setAttribute('transform', 'translate(' + (p.x - 12*iconScale) + ',' + (p.y - 12*iconScale) + ') scale(' + iconScale + ')');
-      iconWrap.setAttribute('fill', 'none');
-      iconWrap.setAttribute('stroke-width', '1.6');
-      iconWrap.setAttribute('stroke-linecap', 'round');
-      iconWrap.setAttribute('stroke-linejoin', 'round');
-      iconWrap.setAttribute('stroke', p.channel.accent === 'pink' ? COLORS.pink : COLORS.navy);
-      iconWrap.innerHTML = ICONS[p.channel.icon];
-      content.appendChild(iconWrap);
-
-      var label = document.createElementNS(ns,'text');
-      label.setAttribute('x', p.x);
-      label.setAttribute('y', p.y + 48);
-      label.setAttribute('text-anchor','middle');
-      label.setAttribute('class','hub-node-label');
-      label.textContent = p.channel.label;
-      content.appendChild(label);
-
-      var stat = CHANNEL_STATS[p.channel.id];
-      if (stat){
-        var statText = document.createElementNS(ns,'text');
-        statText.setAttribute('x', p.x);
-        statText.setAttribute('y', p.y + 61);
-        statText.setAttribute('text-anchor','middle');
-        statText.setAttribute('class','hub-node-stat');
-        statText.textContent = stat.short;
-        var titleEl = document.createElementNS(ns,'title');
-        titleEl.textContent = stat.full;
-        statText.appendChild(titleEl);
-        content.appendChild(statText);
-      }
-
-      outer.appendChild(content);
-
-      // coverage badge: teal circle (primary/partial) or gray dash (uncovered)
-      var badgeCircle = document.createElementNS(ns,'circle');
-      badgeCircle.setAttribute('cx', p.x + 22);
-      badgeCircle.setAttribute('cy', p.y - 22);
-      badgeCircle.setAttribute('r', 8);
-      badgeCircle.setAttribute('fill', 'none');
-      badgeCircle.setAttribute('stroke', COLORS.teal);
-      badgeCircle.setAttribute('stroke-width', '2.5');
-      badgeCircle.setAttribute('opacity', '0');
-      outer.appendChild(badgeCircle);
-
-      var badgeDash = document.createElementNS(ns,'line');
-      badgeDash.setAttribute('x1', p.x + 17);
-      badgeDash.setAttribute('y1', p.y - 22);
-      badgeDash.setAttribute('x2', p.x + 27);
-      badgeDash.setAttribute('y2', p.y - 22);
-      badgeDash.setAttribute('stroke', COLORS.grayBlue);
-      badgeDash.setAttribute('stroke-width', '2.5');
-      badgeDash.setAttribute('stroke-linecap', 'round');
-      badgeDash.setAttribute('opacity', '0');
-      outer.appendChild(badgeDash);
-
-      outer.addEventListener('click', function(){
-        focusedChannel = (focusedChannel === p.channel.id) ? null : p.channel.id;
-        refreshDiagram();
-        renderFocusPanel();
-      });
-
-      hubSvg.appendChild(outer);
-      nodeRefs[p.channel.id] = { highlight:highlight, badgeCircle:badgeCircle, badgeDash:badgeDash };
-    });
-
-    var centerCircle = document.createElementNS(ns,'circle');
-    centerCircle.setAttribute('cx', cx);
-    centerCircle.setAttribute('cy', cy);
-    centerCircle.setAttribute('r', 44);
-    centerCircle.setAttribute('fill', COLORS.navy);
-    hubSvg.appendChild(centerCircle);
-
-    var centerText = document.createElementNS(ns,'text');
-    centerText.setAttribute('x', cx);
-    centerText.setAttribute('y', cy - 4);
-    centerText.setAttribute('text-anchor','middle');
-    centerText.setAttribute('class','hub-center-label');
-    centerText.textContent = 'Your';
-    hubSvg.appendChild(centerText);
-
-    var centerText2 = document.createElementNS(ns,'text');
-    centerText2.setAttribute('x', cx);
-    centerText2.setAttribute('y', cy + 13);
-    centerText2.setAttribute('text-anchor','middle');
-    centerText2.setAttribute('class','hub-center-label');
-    centerText2.textContent = 'data';
-    hubSvg.appendChild(centerText2);
-  }
-
-  function refreshDiagram(){
-    var addressedCount = 0;
-    CHANNELS.forEach(function(channel){
-      var exploreLevel = bestLevel(channel.id, activeCaps);
-      var refs = nodeRefs[channel.id];
-
-      refs.highlight.setAttribute('opacity', focusedChannel === channel.id ? '1' : '0');
-
-      if (exploreLevel === 'primary'){
-        refs.badgeCircle.setAttribute('fill', COLORS.teal);
-        refs.badgeCircle.setAttribute('opacity', '1');
-        refs.badgeDash.setAttribute('opacity', '0');
-        addressedCount++;
-      } else if (exploreLevel === 'partial'){
-        refs.badgeCircle.setAttribute('fill', '#fff');
-        refs.badgeCircle.setAttribute('opacity', '1');
-        refs.badgeDash.setAttribute('opacity', '0');
-        addressedCount++;
-      } else {
-        refs.badgeCircle.setAttribute('opacity', '0');
-        refs.badgeDash.setAttribute('opacity', '0.7');
-      }
-    });
-    document.getElementById('channel-counter').textContent = addressedCount + ' / 6 exfiltration channels addressed';
-  }
-
-  // ---------- Channel focus panel ----------
-  var focusWrap = document.getElementById('focus-panel-wrap');
-
-  function renderFocusPanel(){
-    if (!focusedChannel){
-      focusWrap.innerHTML = '';
-      return;
-    }
-    var channel = CHANNELS.filter(function(c){ return c.id === focusedChannel; })[0];
-    var coverageForChannel = COVERAGE[channel.id];
-    var covering = CAPABILITIES.filter(function(c){ return coverageForChannel[c.id]; });
-
-    var itemsHtml;
-    if (covering.length === 0){
-      itemsHtml = '<p class="focus-none">No capability in this toolkit directly covers this channel today.</p>';
-    } else {
-      itemsHtml = covering.map(function(cap){
-        var level = coverageForChannel[cap.id];
-        var why = (CHANNEL_WHY[channel.id] && CHANNEL_WHY[channel.id][cap.id]) || cap.reduces;
-        return '<div class="focus-item">' +
-          '<span class="focus-item-badge ' + level + '">' + (level === 'primary' ? 'Primary' : 'Partial') + '</span>' +
-          '<div class="focus-item-text"><strong>' + cap.label + '</strong>' + why + '</div>' +
-        '</div>';
-      }).join('');
-    }
-
-    var aiLink = channel.id === 'ai-tools'
-      ? '<a class="focus-ai-link" href="dspm.html">See the full AI data risk story &rarr;</a>'
-      : '';
-
-    focusWrap.innerHTML = '<div class="focus-panel">' +
-      '<button class="focus-panel-close" type="button" aria-label="Close">&times;</button>' +
-      '<div class="focus-panel-title">' + channel.label + '</div>' +
-      '<div class="focus-panel-sub">What covers this channel, and why.</div>' +
-      itemsHtml +
-      aiLink +
-    '</div>';
-
-    focusWrap.querySelector('.focus-panel-close').addEventListener('click', function(){
-      focusedChannel = null;
-      refreshDiagram();
-      renderFocusPanel();
-    });
-  }
-
-  // ---------- Capability cards ----------
-  var toggleButtons = document.querySelectorAll('.cap-toggle');
-  var cardsContainer = document.getElementById('capability-cards');
-
-  function renderCards(){
-    var activeIds = CAPABILITIES.filter(function(c){ return activeCaps[c.id]; });
-
-    if (activeIds.length === 0){
-      cardsContainer.innerHTML = '<p class="cap-empty-prompt" id="cap-empty-prompt">Select a capability above to see how it reduces exfiltration risk.</p>';
-      return;
-    }
-
-    cardsContainer.innerHTML = activeIds.map(function(cap){
-      var practiceHtml = cap.practice.map(function(item){
-        var tagHtml = item.tag ? '<span class="cap-tag">' + item.tag + '</span>' : '';
-        return '<li class="cap-practice-item">' + tagHtml + item.text + '</li>';
-      }).join('');
-
-      var noteHtml = cap.stat.note ? '<div class="cap-card-stat-note">' + cap.stat.note + '</div>' : '';
-
-      return '<div class="cap-card">' +
-        '<div class="cap-card-label">' + cap.label + '</div>' +
-        '<div class="cap-card-desc">' + cap.description + '</div>' +
-        '<div class="cap-card-reduces"><span class="cap-card-section-label">How this reduces risk</span>' + cap.reduces + '</div>' +
-        '<div><span class="cap-card-section-label">In practice</span><ul class="cap-practice-list">' + practiceHtml + '</ul></div>' +
-        '<div class="cap-card-stat">' +
-          '<div class="cap-card-stat-value">' + cap.stat.value + '</div>' +
-          '<div class="cap-card-stat-caption">' + cap.stat.caption + '</div>' +
-          noteHtml +
-          '<div class="cap-card-stat-source">' + cap.stat.source + '</div>' +
-        '</div>' +
-      '</div>';
+  var covBody = document.getElementById('cov-body');
+  covBody.innerHTML = CHANNELS.map(function(ch){
+    var cells = CAPS.map(function(cap){
+      var l = bestLevel(ch, cap);
+      return '<td><span class="cell ' + (l || 'none') + '">' + (l === 'primary' ? 'Breaks' : l === 'partial' ? 'Helps' : '—') + '</span></td>';
     }).join('');
-  }
-
-  // ---------- Closing recap ----------
-  var recapEl = document.getElementById('closing-recap');
-
-  function updateRecap(){
-    var exploredCaps = CAPABILITIES.filter(function(c){ return activeCaps[c.id]; });
-
-    if (exploredCaps.length === 0){
-      recapEl.innerHTML = '<p class="recap-empty">Nothing explored yet — select a capability above, or click a channel, to start mapping coverage.</p>';
-      return;
-    }
-
-    var coveredChannels = CHANNELS.filter(function(ch){ return bestLevel(ch.id, activeCaps) !== null; });
-    var openChannels = CHANNELS.filter(function(ch){ return bestLevel(ch.id, activeCaps) === null; });
-    var capNames = exploredCaps.map(function(c){ return c.label; }).join(', ');
-    var coveredNames = coveredChannels.map(function(ch){ return ch.label; }).join(', ');
-
-    var html = '<div class="recap-label">Where this leaves things</div>' +
-      '<div class="recap-line">Explored: <strong>' + capNames + '</strong> — covering ' + coveredChannels.length + ' of 6 channels (' + coveredNames + ').</div>';
-
-    if (openChannels.length > 0){
-      var openNames = openChannels.map(function(ch){ return ch.label; }).join(', ');
-      html += '<div class="recap-line">Still open: <strong>' + openNames + '</strong>.</div>';
-    }
-
-    recapEl.innerHTML = html;
-  }
-
-  toggleButtons.forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var capId = btn.dataset.cap;
-      if (activeCaps[capId]){
-        delete activeCaps[capId];
-        btn.classList.remove('active');
-      } else {
-        activeCaps[capId] = true;
-        btn.classList.add('active');
-      }
-      refreshDiagram();
-      renderCards();
-      updateRecap();
-    });
+    var open = ch.steps.filter(function(s){ return !s.c.some(function(c){ return c.lvl === 'primary'; }); }).length;
+    return '<tr class="grid-row" tabindex="0" data-id="' + ch.id + '"><td>' + esc(ch.label) + '</td>' + cells +
+      '<td><span class="open-count' + (open === 0 ? ' zero' : '') + '">' + open + ' of ' + ch.steps.length + '</span></td></tr>';
+  }).join('');
+  Array.prototype.forEach.call(covBody.querySelectorAll('.grid-row'), function(row){
+    function go(){ select(row.dataset.id); document.getElementById('paths').scrollIntoView({behavior: reduceMotion ? 'auto' : 'smooth'}); }
+    row.addEventListener('click', go);
+    row.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); go(); } });
   });
 
-  buildHub();
-  refreshDiagram();
-  renderCards();
-  renderFocusPanel();
-  updateRecap();
+  select(CHANNELS[0].id);
 
   // ---------- Reveal on scroll ----------
   var sections = document.querySelectorAll('.section');
   if ('IntersectionObserver' in window){
     var observer = new IntersectionObserver(function(entries){
       entries.forEach(function(entry){
-        if (entry.isIntersecting){
-          entry.target.classList.add('in-view');
-          observer.unobserve(entry.target);
-        }
+        if (entry.isIntersecting){ entry.target.classList.add('in-view'); observer.unobserve(entry.target); }
       });
-    }, { threshold: 0.1 });
+    }, { threshold: 0.05 });
     sections.forEach(function(s){ observer.observe(s); });
   } else {
     sections.forEach(function(s){ s.classList.add('in-view'); });
   }
-
 })();
 </script>
 
