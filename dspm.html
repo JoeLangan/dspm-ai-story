@@ -101,13 +101,23 @@
   .estimate-detail{color:var(--gray-blue);font-size:12.5px;margin-top:14px;}
   .estimate-shadow-callout{color:var(--pink);font-size:12.5px;font-weight:700;margin-top:10px;}
 
+  .form-row.form-row-2{grid-template-columns:repeat(2,1fr);max-width:640px;}
+  .factor-list{border:1px solid var(--border);border-radius:12px;padding:18px 20px 12px;margin:0 0 20px;}
+  .factor-list legend{font-size:12.5px;font-weight:700;color:var(--gray-blue);padding:0 6px;}
+  .factor-list label{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--navy);margin-bottom:10px;cursor:pointer;line-height:1.4;}
+  .factor-list input{accent-color:var(--teal);margin-top:3px;flex:none;}
+  .factor-list input:focus-visible{outline:2px solid var(--teal);outline-offset:2px;}
+  .factor-results{list-style:none;padding:0;margin:20px auto 0;max-width:620px;text-align:left;}
+  .factor-results li{border-top:1px solid var(--border);padding:12px 0;font-size:13.5px;color:var(--navy);line-height:1.5;}
+  .factor-results li strong{color:var(--pink);}
+  .factor-results .factor-cap{display:block;font-size:12px;color:var(--gray-blue);margin-top:2px;}
   @media (max-width:900px){
     .card-grid,.form-row,.stats-row{grid-template-columns:repeat(2,1fr);}
     .dcg-strip{grid-template-columns:1fr;gap:24px;}
     .stat-headline{font-size:44px;}
   }
   @media (max-width:560px){
-    .card-grid,.form-row,.stats-row{grid-template-columns:1fr;}
+    .card-grid,.form-row,.form-row.form-row-2,.stats-row{grid-template-columns:1fr;}
   }
 </style>
 </head>
@@ -131,8 +141,8 @@
 <!-- Section 1: The gap -->
 <section id="gap" class="section">
   <p class="eyebrow">The gap</p>
-  <h1 class="stat-headline">~55% of enterprise data is "dark"<span class="stat-detail">Stored but never classified, analyzed, or governed by policy.</span></h1>
-  <p class="stat-footnote">Source: Splunk, <em>State of Dark Data Report</em>, 2025.</p>
+  <h1 class="stat-headline">Only 13% of enterprises can clearly see how AI touches their data<span class="stat-detail">Yet 83% already use AI in daily operations. The gap between adoption and visibility is where exposure lives.</span></h1>
+  <p class="stat-footnote">Source: Cyera Research Labs &amp; Cybersecurity Insiders, <em>2025 State of AI Data Security Report</em> (survey of 921 IT and security professionals), September 2025.</p>
   <div class="card-grid" id="grid-1" style="margin-top:28px;"></div>
   <p class="supporting-line">You can't protect, govern, or apply policy to data you don't know exists.</p>
 </section>
@@ -150,13 +160,13 @@
     <svg id="fan-svg-2" viewBox="0 0 640 380" aria-label="AI agent access diagram"></svg>
   </div>
   <div class="stat-callout">
-    <strong>68%</strong>of organizations currently can't distinguish between human and AI agent activity inside their own systems.
+    <strong>66%</strong>of organizations have already caught AI over-accessing sensitive data. Only 11% can automatically block it.
   </div>
-  <p class="stat-footnote">Source: Cloud Security Alliance &amp; Aembit, <em>Identity and Access Gaps in the Age of Autonomous AI</em>, 2026.</p>
+  <p class="stat-footnote">Source: Cyera Research Labs &amp; Cybersecurity Insiders, <em>2025 State of AI Data Security Report</em>.</p>
   <div class="stat-callout pink-alt">
-    <strong>+$670K</strong>Breaches involving unsanctioned "shadow AI" tools cost organizations $670K more on average than standard incidents.
+    <strong>43%</strong>of breached organizations had a security incident involving unsanctioned "shadow AI", up from 20% a year earlier. Those incidents averaged $5.39M.
   </div>
-  <p class="stat-footnote">Source: IBM, <em>Cost of a Data Breach Report</em>, 2025.</p>
+  <p class="stat-footnote">Source: IBM &amp; Ponemon Institute, <em>Cost of a Data Breach Report</em>, 2026.</p>
   <p class="supporting-line">This exposure isn't new. AI just made it discoverable in seconds instead of never.</p>
 </section>
 
@@ -181,6 +191,7 @@
     <div class="stat-tile"><div class="stat-value" id="stat-flagged">—</div><div class="stat-caption">Sensitive records flagged</div></div>
     <div class="stat-tile"><div class="stat-value" id="stat-paths">—</div><div class="stat-caption">AI/agent access paths flagged</div></div>
   </div>
+  <p class="disclaimer" style="margin:-20px 0 28px;">Figures shown represent an illustrative environment, not a real customer scan.</p>
 
   <div class="card-grid" id="grid-3"></div>
 
@@ -194,52 +205,73 @@
       <p>Context-aware classification, not just keyword or pattern matching.</p>
     </div>
     <div class="dcg-step">
-      <h3>Govern</h3>
-      <p>Real-time policy enforcement at the point of access — browser, AI agent, or data pipeline.</p>
+      <h3>Remediate &amp; enforce</h3>
+      <p>Fix over-exposure at the source, and hand accurate classification to the controls that enforce it, whether that's Cyera's own DLP or the SSE and DLP stack already in place.</p>
     </div>
   </div>
 
+  <!-- Confirm product names against Cyera's current datasheets before each customer use. -->
   <p class="proof-points">
-    <strong>Browser Shield for AI</strong> flags sensitive data before it's pasted into a public AI tool.
-    <strong>Data Lineage</strong> tracks who or what touched a file, and when.
-    Expanded visibility into AI agent activity in platforms like <strong>Snowflake Cortex</strong>.
+    <strong>AI Guardian</strong> extends discovery and governance to AI tools, copilots and agents: what they can reach, and what they're sending.
+    <strong>Omni DLP</strong> applies Cyera's classification to data-loss prevention, alongside or feeding existing DLP.
+    AI agents and machine identities are treated as their own access class, not lumped in with users.
   </p>
 </section>
 
 <!-- Section 4: Make it yours -->
 <section id="tailor" class="section">
   <p class="eyebrow">Make it yours</p>
-  <h2 style="font-size:28px;margin-bottom:6px;">Estimate your exposure</h2>
-  <p class="stat-sub" style="margin-top:6px;">A rough, illustrative estimate based on company size and industry.</p>
+  <h2 style="font-size:28px;margin-bottom:6px;">Benchmark your exposure</h2>
+  <p class="stat-sub" style="margin-top:6px;">Published industry benchmarks, and the measured cost factors that apply to you.</p>
 
-  <div class="form-row">
-    <label>Employees
-      <input type="number" id="input-employees" min="0" placeholder="e.g. 5000">
-    </label>
-    <label>SaaS applications in use
-      <input type="number" id="input-saas" min="0" placeholder="e.g. 120">
-    </label>
+  <div class="form-row form-row-2">
     <label>Industry
       <select id="input-industry">
-        <option>Financial Services</option>
+        <option value="global">All industries (global)</option>
         <option>Healthcare</option>
-        <option>Manufacturing</option>
+        <option>Financial Services</option>
+        <option>Industrial</option>
         <option selected>Technology</option>
+        <option>Entertainment</option>
+        <option>Pharmaceuticals</option>
+        <option>Energy</option>
+        <option>Services</option>
+        <option>Communications</option>
+        <option>Transportation</option>
+        <option>Media</option>
+        <option>Hospitality</option>
+        <option>Consumer</option>
+        <option>Education</option>
+        <option>Research</option>
         <option>Retail</option>
-        <option>Other</option>
+        <option>Public Sector</option>
+      </select>
+    </label>
+    <label>Headquartered in
+      <select id="input-region">
+        <option value="global">Outside the US</option>
+        <option value="us">United States</option>
       </select>
     </label>
   </div>
 
+  <fieldset class="factor-list">
+    <legend>Which of these sound familiar?</legend>
+    <label><input type="checkbox" data-factor="shadowai"> Staff use AI tools that security hasn't approved</label>
+    <label><input type="checkbox" data-factor="shadowit"> We don't have a full picture of which cloud and SaaS apps hold our data</label>
+    <label><input type="checkbox" data-factor="supply"> Suppliers and partners hold or process our sensitive data</label>
+    <label><input type="checkbox" data-factor="aiaccess"> AI agents or copilots have broad access to internal data</label>
+  </fieldset>
+
   <div class="estimate-output">
     <div class="estimate-value" id="estimate-value">—</div>
-    <div class="estimate-caption">Estimated dollar exposure tied to dark, ungoverned data</div>
+    <div class="estimate-caption" id="estimate-caption">Average cost of a breach</div>
     <div class="estimate-detail" id="estimate-detail"></div>
-    <div class="estimate-shadow-callout" id="estimate-shadow-ai"></div>
+    <ul class="factor-results" id="factor-results"></ul>
   </div>
 
-  <p class="stat-footnote">Modeled using IBM's <em>Cost of a Data Breach Report</em> 2025 (global average $4.44M; shadow AI premium +$670K; per-record cost $160&ndash;$178) and Splunk's <em>State of Dark Data Report</em> 2025 (55% dark data baseline).</p>
-  <p class="disclaimer">These are industry-average estimates for illustration only, not a calculation based on your actual environment.</p>
+  <p class="stat-footnote">Source: IBM &amp; Ponemon Institute, <em>Cost of a Data Breach Report</em>, 2026 (602 organizations breached March 2025 to February 2026). Industry averages are global. Each factor is measured independently and they are not additive.</p>
+  <p class="disclaimer">Published averages for context, not a calculation based on your environment. The next step is measuring what's actually there.</p>
 </section>
 
 <footer>
@@ -481,7 +513,7 @@
 
     if (on){
       updateFan(fan3, 0.1, COLORS.teal);
-      fan3Caption.textContent = 'With Cyera, access stays least-privilege regardless of AI/agent adoption level.';
+      fan3Caption.textContent = 'With Cyera, over-privileged AI and agent access paths are identified and prioritized for remediation.';
       animateValue(statClassified, 0, 94, { suffix:'%' });
       animateValue(statFlagged, 0, 1240, {});
       animateValue(statPaths, 0, 38, {});
@@ -500,78 +532,77 @@
   applyCyeraState(false);
 
   // ---------- Section 4: Make it yours ----------
-  var inputEmployees = document.getElementById('input-employees');
-  var inputSaas = document.getElementById('input-saas');
-  var inputIndustry = document.getElementById('input-industry');
-  var estimateValueEl = document.getElementById('estimate-value');
-  var estimateDetailEl = document.getElementById('estimate-detail');
-  var estimateShadowAiEl = document.getElementById('estimate-shadow-ai');
-
-  var INDUSTRY_FACTOR = {
-    'Financial Services': 1.15,
-    'Healthcare': 1.2,
-    'Manufacturing': 0.9,
-    'Technology': 1.0,
-    'Retail': 0.95,
-    'Other': 1.0
+  // IBM & Ponemon, Cost of a Data Breach Report 2026. Industry figures are global averages.
+  var IBM_2026 = {
+    globalAvg: 4990000,
+    usAvg: 11500000,
+    industry: {
+      'Healthcare':6640000, 'Financial Services':6290000, 'Industrial':5500000, 'Technology':5500000,
+      'Entertainment':5380000, 'Pharmaceuticals':5250000, 'Energy':5240000, 'Services':5080000,
+      'Communications':4710000, 'Transportation':4500000, 'Media':4490000, 'Hospitality':4330000,
+      'Consumer':4310000, 'Education':4150000, 'Research':3990000, 'Retail':3800000, 'Public Sector':3500000
+    }
   };
 
-  // IBM Cost of a Data Breach Report, 2025
-  var IBM_BASELINE_BREACH_COST = 4440000;
-  var IBM_SHADOW_AI_DELTA = 670000;
-  var IBM_RECORD_COST_LOW = 160;
-  var IBM_RECORD_COST_MID = 168;
-  var IBM_RECORD_COST_HIGH = 178;
+  var FACTORS = {
+    shadowai: {
+      text:'Shadow AI incidents hit <strong>43%</strong> of breached organizations and averaged <strong>$5.39M</strong>.',
+      cap:'Addressed by: DSPM (what AI can reach) and SSE (inline inspection of AI traffic).'
+    },
+    shadowit: {
+      text:'Lack of visibility into applications added <strong>+$201K</strong> to the average breach.',
+      cap:'Addressed by: DSPM (where the data lives) and SSE/CASB (which apps are in use).'
+    },
+    supply: {
+      text:'Supply chain compromise added <strong>+$227K</strong>, the largest cost amplifier IBM measured, and took <strong>258 days</strong> to identify and contain.',
+      cap:'Addressed by: DSPM (classification that travels with the data) and Identity (time-bound vendor access).'
+    },
+    aiaccess: {
+      text:'Among organizations with AI-related incidents, <strong>92%</strong> lacked proper AI access controls.',
+      cap:'Addressed by: DSPM (AI access paths) and Identity (agents governed as their own identity class).'
+    }
+  };
 
-  // Splunk, State of Dark Data Report, 2025
-  var DARK_DATA_SHARE = 0.55;
-
-  var REF_EMPLOYEES = 5000;
-  var REF_SAAS = 120;
-
-  function formatGB(gb){
-    if (gb >= 1000000) return (gb/1000000).toFixed(1) + ' PB';
-    if (gb >= 1000) return (gb/1000).toFixed(1) + ' TB';
-    return Math.round(gb).toLocaleString() + ' GB';
-  }
+  var inputIndustry = document.getElementById('input-industry');
+  var inputRegion = document.getElementById('input-region');
+  var estimateValueEl = document.getElementById('estimate-value');
+  var estimateCaptionEl = document.getElementById('estimate-caption');
+  var estimateDetailEl = document.getElementById('estimate-detail');
+  var factorResultsEl = document.getElementById('factor-results');
+  var factorInputs = document.querySelectorAll('.factor-list input');
 
   function formatUSD(n){
-    if (n >= 1000000) return '$' + (n/1000000).toFixed(1) + 'M';
-    return '$' + Math.round(n/1000) + 'K';
+    return '$' + (n/1000000).toFixed(2).replace(/0$/,'') + 'M';
   }
 
   function computeEstimate(){
-    var employees = parseFloat(inputEmployees.value) || 0;
-    var saas = parseFloat(inputSaas.value) || 0;
+    var ind = inputIndustry.value;
+    var isUS = inputRegion.value === 'us';
+    var industryAvg = ind === 'global' ? IBM_2026.globalAvg : IBM_2026.industry[ind];
 
-    if (employees <= 0 && saas <= 0){
-      estimateValueEl.textContent = '—';
-      estimateDetailEl.textContent = '';
-      estimateShadowAiEl.textContent = '';
-      return;
-    }
+    estimateValueEl.textContent = formatUSD(industryAvg);
+    estimateCaptionEl.textContent = ind === 'global'
+      ? 'Global average cost of a breach'
+      : 'Average cost of a breach in ' + ind + ' (global)';
 
-    var factor = INDUSTRY_FACTOR[inputIndustry.value] || 1.0;
-    var totalGB = (employees * 2 + saas * 40) * factor;
-    var darkGB = totalGB * DARK_DATA_SHARE;
+    estimateDetailEl.textContent = isUS
+      ? 'US-headquartered organizations averaged ' + formatUSD(IBM_2026.usAvg) + ' per breach across all industries, more than double the global figure.'
+      : 'The global all-industry average is ' + formatUSD(IBM_2026.globalAvg) + ', a record high and up 12% year on year.';
 
-    var employeeRatio = employees > 0 ? employees / REF_EMPLOYEES : 1;
-    var saasRatio = saas > 0 ? saas / REF_SAAS : 1;
-    var sizeFactor = employeeRatio * 0.6 + saasRatio * 0.4;
-    sizeFactor = Math.max(0.35, Math.min(4, sizeFactor));
-
-    var midExposure = IBM_BASELINE_BREACH_COST * sizeFactor * factor * DARK_DATA_SHARE;
-    var lowExposure = midExposure * (IBM_RECORD_COST_LOW / IBM_RECORD_COST_MID);
-    var highExposure = midExposure * (IBM_RECORD_COST_HIGH / IBM_RECORD_COST_MID);
-
-    estimateValueEl.textContent = '≈ ' + formatUSD(lowExposure) + ' – ' + formatUSD(highExposure);
-    estimateDetailEl.textContent = 'Modeled on an estimated ' + formatGB(darkGB) + ' of dark, ungoverned data across ' +
-      employees.toLocaleString() + ' employees and ' + saas.toLocaleString() + ' SaaS applications (' + inputIndustry.value + ').';
-    estimateShadowAiEl.textContent = '+' + formatUSD(IBM_SHADOW_AI_DELTA) + ' higher on average if unsanctioned ("shadow") AI tool use is involved.';
+    var items = [];
+    factorInputs.forEach(function(cb){
+      if (cb.checked){
+        var f = FACTORS[cb.dataset.factor];
+        items.push('<li>' + f.text + '<span class="factor-cap">' + f.cap + '</span></li>');
+      }
+    });
+    factorResultsEl.innerHTML = items.join('');
   }
 
-  [inputEmployees, inputSaas].forEach(function(el){ el.addEventListener('input', computeEstimate); });
   inputIndustry.addEventListener('change', computeEstimate);
+  inputRegion.addEventListener('change', computeEstimate);
+  factorInputs.forEach(function(cb){ cb.addEventListener('change', computeEstimate); });
+  computeEstimate();
 
   // ---------- Reveal on scroll ----------
   var sections = document.querySelectorAll('.section');

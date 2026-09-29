@@ -110,10 +110,10 @@
 <section class="section" id="channels">
   <p class="eyebrow">Exfiltration Channels</p>
   <h1 class="page-title">Where your data actually leaves</h1>
-  <p class="page-sub">Six channels account for the overwhelming majority of enterprise data exfiltration. Select a capability below, or click a channel directly, to see how each closes the gap.</p>
+  <p class="page-sub">Six common routes by which sensitive data leaves an organization. Select a capability below, or click a channel directly, to see how each closes the gap.</p>
 
-  <div class="opening-callout"><strong>No single point of failure.</strong> Attackers succeed just as often through credentials, phishing, cloud misconfiguration, vendor access, or endpoints — IBM's 2025 data alone spans $1.9M to $4.67M in breach cost depending on which channel is involved.</div>
-  <p class="stat-footnote">Source: IBM, <em>Cost of a Data Breach Report</em>, 2025.</p>
+  <div class="opening-callout"><strong>No single point of failure.</strong> Breaches start through phishing, abused credentials, exposed cloud and SaaS data, AI tools, suppliers and endpoints. In IBM's 2026 study, phishing was the most common entry point for the fourth year running, and breaches that began with valid account abuse still averaged $5.07M.</div>
+  <p class="stat-footnote">Source: IBM &amp; Ponemon Institute, <em>Cost of a Data Breach Report</em>, 2026.</p>
 
   <p class="explore-label" style="margin-top:28px;">Explore a capability</p>
   <div class="toggle-group" id="capability-toggles">
@@ -135,7 +135,7 @@
     <p class="cap-empty-prompt" id="cap-empty-prompt">Select a capability above to see how it reduces exfiltration risk.</p>
   </div>
 
-  <p class="stat-footnote">For reference: IBM's 2025 Cost of a Data Breach Report puts average breach costs in the $4.4M&ndash;$4.9M range depending on how the breach began — figures shown per capability above are independently measured, not additive.</p>
+  <p class="stat-footnote">For reference: IBM's 2026 Cost of a Data Breach Report puts the global average breach at $4.99M, and $11.5M for US organizations. Figures shown per channel and capability are measured independently and are not additive.</p>
 
   <div class="recap-panel" id="closing-recap"></div>
 
@@ -182,10 +182,11 @@
 
   // Short supporting stat per channel (only where an independently published IBM figure exists)
   var CHANNEL_STATS = {
-    'credentials':  { short:'$4.67M avg. breach cost', full:'$4.67M average breach cost — IBM 2025' },
-    'phishing':     { short:'16% of breaches start here', full:'16% of breaches start here, the single most common entry point — IBM 2025' },
-    'third-party':  { short:'267 days avg. to detect', full:'267 days average time to detect, the longest of any category — IBM 2025' },
-    'ai-tools':     { short:'20% involve shadow AI', full:'20% of breaches now involve unsanctioned AI tools, adding $670K on average — IBM 2025' }
+    'credentials':  { short:'$5.07M avg. (valid account abuse)', full:'Breaches starting with valid account abuse averaged $5.07M — IBM 2026' },
+    'phishing':     { short:'17% of breaches, $5.29M avg.', full:'Phishing, including voice and SMS, was the most common and costliest initial vector: 17% of breaches, $5.29M average — IBM 2026' },
+    'cloud-saas':   { short:'+$201K from shadow IT', full:'Lack of visibility into applications in use added $201K to the average breach — IBM 2026' },
+    'third-party':  { short:'258 days to contain', full:'Supply chain compromise took 258 days to identify and contain and added $227K per breach, the largest amplifier measured — IBM 2026' },
+    'ai-tools':     { short:'43% saw shadow AI incidents', full:'43% of breached organizations had incidents involving unsanctioned AI, averaging $5.39M — IBM 2026' }
   };
 
   // Why each capability covers a given channel, surfaced when a node is clicked
@@ -229,7 +230,7 @@
         { tag:null, text:'Flags overshared or externally exposed sensitive data for remediation' },
         { tag:'AI-DSPM', text:'Specifically watches AI surfaces — flags sensitive data before it’s pasted into a public AI tool, and tracks what AI agents can access' }
       ],
-      stat:{ value:'$208K', caption:'lower average breach cost from encryption alone, one part of the broader data security fundamentals (discovery, classification, encryption) IBM recommends.', source:'IBM 2025 Cost of a Data Breach Report.' }
+      stat:{ value:'52%', caption:'of breaches involved customer personal data, at $192 per record: the data DSPM exists to find and classify before someone else does.', source:'IBM & Ponemon Institute, Cost of a Data Breach Report 2026.' }
     },
     {
       id:'SSE',
@@ -242,7 +243,7 @@
         { tag:'ZTNA', text:'Every access request is evaluated using identity, device posture, and risk signals in real time — not a one-time login that grants standing network access' },
         { tag:'CASB', text:'Extends visibility and policy to unsanctioned SaaS and personal cloud storage apps' }
       ],
-      stat:{ value:'$1.76M', caption:'lower average breach cost for organizations with zero trust architecture in place.', source:'IBM 2025 Cost of a Data Breach Report.' }
+      stat:{ value:'+$201K', caption:'added to the average breach when an organization lacks visibility into which applications are in use: the shadow IT gap that CASB and SWG close.', source:'IBM & Ponemon Institute, Cost of a Data Breach Report 2026.' }
     },
     {
       id:'Identity',
@@ -256,7 +257,7 @@
         { tag:'IGA', text:'Joiner-mover-leaver automation keeps access aligned to role as people change jobs internally, not just when they leave' },
         { tag:'ITDR', text:'Continuous identity threat detection flags anomalous access in real time, for human and machine identities alike' }
       ],
-      stat:{ value:'$4.67M', caption:'average cost of a credential-based breach — the cost this control is meant to prevent, not a measured savings figure.', note:'IBM’s top recommended lever for 2025 is fortifying identity and access management.', source:'IBM 2025 Cost of a Data Breach Report.' }
+      stat:{ value:'$5.07M', caption:'average cost of a breach that began with valid account abuse: the cost this control is meant to prevent, not a measured savings figure.', note:'Among organizations with AI-related incidents, 92% lacked proper AI access controls.', source:'IBM & Ponemon Institute, Cost of a Data Breach Report 2026.' }
     },
     {
       id:'EDR',
@@ -269,7 +270,7 @@
         { tag:null, text:'Can roll back malicious changes without a full device rebuild' },
         { tag:null, text:'Feeds detections into a broader pipeline so an endpoint alert can be correlated with identity or network activity' }
       ],
-      stat:{ value:'$1.9M', caption:'lower average breach cost for organizations using AI-driven security automation extensively.', source:'IBM 2025 Cost of a Data Breach Report.' }
+      stat:{ value:'−$1.93M', caption:'lower average breach cost for organizations using security AI and automation extensively, a category that includes, but is broader than, EDR.', source:'IBM & Ponemon Institute, Cost of a Data Breach Report 2026.' }
     }
   ];
   var CAP_BY_ID = {};
